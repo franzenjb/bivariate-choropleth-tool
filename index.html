@@ -1197,9 +1197,30 @@
                 const fieldType = field.type || 'Unknown';
                 
                 // Add to selects (all fields that contain numeric data)
-                const sampleValue = currentData.length > 0 ? currentData[0].properties[fieldName] : null;
-                const isNumeric = fieldType.includes('Integer') || fieldType.includes('Double') || fieldType.includes('Single') || 
-                                 fieldType.includes('Number') || (!isNaN(parseFloat(sampleValue)) && isFinite(sampleValue));
+                let isNumeric = false;
+                
+                // Check field type first
+                if (fieldType.includes('Integer') || fieldType.includes('Double') || fieldType.includes('Single') || fieldType.includes('Number')) {
+                    isNumeric = true;
+                } else {
+                    // For string fields, check if they actually contain numeric data
+                    // Sample multiple values to be sure
+                    let numericCount = 0;
+                    const sampleSize = Math.min(5, currentData.length);
+                    
+                    for (let i = 0; i < sampleSize; i++) {
+                        const value = currentData[i]?.properties[fieldName];
+                        if (value !== null && value !== undefined && value !== '') {
+                            const num = parseFloat(value);
+                            if (!isNaN(num) && isFinite(num)) {
+                                numericCount++;
+                            }
+                        }
+                    }
+                    
+                    // If most samples are numeric, treat as numeric field
+                    isNumeric = numericCount >= Math.ceil(sampleSize * 0.6);
+                }
                                  
                 if (isNumeric && fieldName !== 'OBJECTID' && fieldName !== 'GlobalID' && fieldName !== 'Shape') {
                     const xOption = document.createElement('option');
@@ -2192,36 +2213,52 @@
         function formatValue(value, fieldName) {
             if (value === null || value === undefined || value === '') return 'N/A';
             
-            const num = parseFloat(value);
-            if (isNaN(num)) return value;
+            // Handle string numbers with commas (e.g., "1,234,567")
+            let cleanValue = value;
+            if (typeof value === 'string') {
+                cleanValue = value.replace(/,/g, '');
+            }
+            
+            const num = parseFloat(cleanValue);
+            if (isNaN(num)) {
+                // If it's not a number, return as-is but warn for debugging
+                if (fieldName && (fieldName.toLowerCase().includes('rate') || 
+                                 fieldName.toLowerCase().includes('income') ||
+                                 fieldName.toLowerCase().includes('pop'))) {
+                    console.warn(`Non-numeric value for numeric field ${fieldName}:`, value);
+                }
+                return value;
+            }
             
             // Handle percentage fields (unemployment rates, etc.)
             if (fieldName && (fieldName.toLowerCase().includes('rate') || 
                              fieldName.toLowerCase().includes('percent') ||
                              fieldName.toLowerCase().includes('pct'))) {
-                // Handle unemployment rates specifically - they should never exceed ~30%
+                
+                // ASSUMPTION: ArcGIS demographic data stores rates as already-formatted percentages
+                // So 5.2 in the data = 5.2% unemployment rate (NOT 0.052 decimal)
+                
                 if (fieldName.toLowerCase().includes('unemp')) {
-                    if (num <= 1) {
-                        // Value is decimal (0.052 = 5.2%)
-                        return (num * 100).toFixed(1) + '%';
-                    } else if (num <= 30) {
-                        // Reasonable unemployment percentage (5.2%)
+                    // Unemployment rates: reasonable range is 0-30%
+                    if (num >= 0 && num <= 30) {
                         return num.toFixed(1) + '%';
+                    } else if (num > 30 && num <= 100) {
+                        // Suspiciously high but possible in some areas
+                        return num.toFixed(1) + '% (High)';
                     } else {
-                        // Likely bad data or needs conversion - cap at reasonable rate
-                        console.warn(`Suspicious unemployment rate: ${num}%, capping at 30%`);
+                        console.warn(`Unrealistic unemployment rate: ${num}`);
                         return 'Data Error';
                     }
-                }
-                
-                // Other percentage fields
-                if (num <= 1) {
-                    return (num * 100).toFixed(1) + '%';
-                } else if (num <= 100) {
-                    return num.toFixed(1) + '%';
                 } else {
-                    // Likely a raw number that needs to be converted
-                    return (num / 100).toFixed(1) + '%';
+                    // Other rate fields - assume they're already percentages
+                    if (num >= 0 && num <= 100) {
+                        return num.toFixed(1) + '%';
+                    } else if (num > 100) {
+                        console.warn(`Suspicious percentage value: ${num} for field ${fieldName}`);
+                        return num.toFixed(1) + '% (Check Data)';
+                    } else {
+                        return num.toFixed(1) + '%';
+                    }
                 }
             }
             
