@@ -1124,6 +1124,15 @@
                 // Display fields
                 displayFields();
                 
+                // Debug suspicious fields automatically
+                if (currentFields.some(f => f.name && f.name.toLowerCase().includes('val'))) {
+                    const homeValField = currentFields.find(f => f.name && f.name.toLowerCase().includes('val'));
+                    if (homeValField) {
+                        console.log('🔍 Debugging home value field:', homeValField.name);
+                        debugFieldValues(homeValField.name);
+                    }
+                }
+                
                 // Display on map
                 if (currentLayer) {
                     map.removeLayer(currentLayer);
@@ -1172,6 +1181,16 @@
                 showStatus('Error: ' + error.message, 'error');
                 showLoading(false);
             }
+        }
+
+        // Debug function to check data values
+        function debugFieldValues(fieldName, sampleSize = 5) {
+            console.log(`\n=== DEBUG: Field ${fieldName} ===`);
+            const samples = currentData.slice(0, sampleSize);
+            samples.forEach((feature, i) => {
+                const value = feature.properties[fieldName];
+                console.log(`Sample ${i+1}:`, typeof value, value);
+            });
         }
 
         // Display fields
@@ -2211,12 +2230,22 @@
         
         // Format values for display
         function formatValue(value, fieldName) {
-            if (value === null || value === undefined || value === '') return 'N/A';
+            // Handle various null/missing value representations
+            if (value === null || value === undefined || value === '' || 
+                value === 'NULL' || value === 'null' || value === 'N/A' || 
+                value === 'n/a' || value === '#N/A' || value === '-999' || value === '-9999') {
+                return 'No Data';
+            }
             
             // Handle string numbers with commas (e.g., "1,234,567")
             let cleanValue = value;
             if (typeof value === 'string') {
-                cleanValue = value.replace(/,/g, '');
+                cleanValue = value.replace(/,/g, '').trim();
+                // Check for other missing data indicators
+                if (cleanValue === '' || cleanValue.toLowerCase() === 'null' || 
+                    cleanValue.toLowerCase() === 'n/a' || cleanValue === '0.00' && fieldName.toLowerCase().includes('val')) {
+                    return 'No Data';
+                }
             }
             
             const num = parseFloat(cleanValue);
@@ -2224,7 +2253,8 @@
                 // If it's not a number, return as-is but warn for debugging
                 if (fieldName && (fieldName.toLowerCase().includes('rate') || 
                                  fieldName.toLowerCase().includes('income') ||
-                                 fieldName.toLowerCase().includes('pop'))) {
+                                 fieldName.toLowerCase().includes('pop') ||
+                                 fieldName.toLowerCase().includes('val'))) {
                     console.warn(`Non-numeric value for numeric field ${fieldName}:`, value);
                 }
                 return value;
@@ -2266,6 +2296,10 @@
             if (fieldName && (fieldName.toLowerCase().includes('income') || 
                              fieldName.toLowerCase().includes('val') ||
                              fieldName.toLowerCase().includes('wage'))) {
+                // Don't show $0 for home values - likely missing data
+                if (num === 0 && fieldName.toLowerCase().includes('val')) {
+                    return 'No Data';
+                }
                 return '$' + num.toLocaleString();
             }
             
