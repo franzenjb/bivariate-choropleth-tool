@@ -57,17 +57,6 @@
             font-weight: normal;
         }
         
-        .demo-toggle {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
         
         .demo-panel.collapsed {
             width: 50px;
@@ -161,9 +150,11 @@
         .tab:hover { color: #B71C1C; }
         
         .tab.active {
-            color: #B71C1C;
+            color: white;
+            background: #B71C1C;
             border-bottom-color: #B71C1C;
             font-weight: bold;
+            border-radius: 8px 8px 0 0;
         }
         
         .tab-content { display: none; }
@@ -442,6 +433,15 @@
                         <h3>Quick Connect
                             <button onclick="resetArcGISTab()" style="float: right; background: #666; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
+                        <div style="background: #f0f8ff; border: 1px solid #B71C1C; border-radius: 4px; padding: 10px; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 8px 0; color: #B71C1C; font-size: 14px;">📋 Quick Start:</h4>
+                            <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #333;">
+                                <li><strong>Click a geography below</strong> (e.g., "Counties" loads 3,142 counties with 60+ demographic fields)</li>
+                                <li><strong>Wait for fields to load</strong> - you'll see "Found X data fields" when ready</li>
+                                <li><strong>Choose X and Y variables</strong> from the dropdowns (now with all demographic options)</li>
+                                <li><strong>Click "Generate Bivariate Map"</strong> to see your analysis</li>
+                            </ol>
+                        </div>
                         <p style="color: #666; font-size: 12px; margin: 10px 0;">Select a geography layer to load with full demographics:</p>
                         <div class="service-preset" onclick="loadARCCounties()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
@@ -506,23 +506,17 @@
                         <h3>📁 Upload CSV Data
                             <button onclick="resetCSVTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
+                        <div style="background: #f0f8ff; border: 1px solid #B71C1C; border-radius: 4px; padding: 10px; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 8px 0; color: #B71C1C; font-size: 14px;">📋 How to Use This Tool:</h4>
+                            <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #333;">
+                                <li><strong>First:</strong> Upload your CSV file with data you want to analyze</li>
+                                <li><strong>Then:</strong> Select which geography to match your data to (counties, states, etc.)</li>
+                                <li><strong>Match:</strong> Connect your CSV field to the geography field</li>
+                                <li><strong>Finally:</strong> Choose X and Y variables from BOTH your CSV data AND geography demographics</li>
+                            </ol>
+                        </div>
                         <input type="file" id="csvFile" accept=".csv">
                         <div class="help-text">Upload a CSV file with data to match to geographic boundaries</div>
-                        <div style="margin-top: 15px;">
-                            <button onclick="loadSampleCSV('divisions')" style="background: #9c27b0; padding: 8px; font-size: 12px; margin: 2px;">Sample Division Data</button>
-                            <button onclick="loadSampleCSV('counties')" style="background: #4caf50; padding: 8px; font-size: 12px; margin: 2px;">Sample County Data</button>
-                            <button onclick="loadSampleCSV('regions')" style="background: #2196f3; padding: 8px; font-size: 12px; margin: 2px;">Sample Region Data</button>
-                        </div>
-                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
-                            <p style="font-size: 12px; color: #B71C1C; margin: 5px 0; font-weight: bold;">🌟 Real Data for Demonstrations:</p>
-                            <button onclick="loadFloridaALICEData()" style="background: linear-gradient(135deg, #f44336, #ff9800); color: white; padding: 10px; font-size: 13px; margin: 5px 0; width: 100%; font-weight: bold;">
-                                📈 Load 2023 Florida ALICE Data (Manual Steps)
-                            </button>
-                            <button onclick="runFloridaALICEOneClick()" style="background: linear-gradient(135deg, #4CAF50, #8BC34A); color: white; padding: 14px; font-size: 15px; margin: 8px 0; width: 100%; font-weight: bold; border: 2px solid #2E7D32; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                ✨ ONE-CLICK: Complete Florida ALICE Demo
-                            </button>
-                            <p style="font-size: 10px; color: #666; margin: 5px 0;">ALICE = Asset Limited, Income Constrained, Employed households</p>
-                        </div>
                     </div>
 
                     <div class="section">
@@ -577,16 +571,18 @@
                     
                     <div style="margin-top: 15px;">
                         <label>X-Axis Variable:</label>
-                        <select id="xVariable">
+                        <select id="xVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
                             <option value="">-- Select X Variable --</option>
                         </select>
+                        <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 This dropdown will show ALL demographic fields (income, population, age, etc.) after you load geography data above</div>
                     </div>
                     
                     <div style="margin-top: 15px;">
                         <label>Y-Axis Variable:</label>
-                        <select id="yVariable">
+                        <select id="yVariable" title="Choose your second variable to compare against the X variable">
                             <option value="">-- Select Y Variable --</option>
                         </select>
+                        <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
                     </div>
                     
                     <button onclick="generateBivariateMap()" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -665,6 +661,7 @@
                         <option value="light">Light Gray</option>
                     </select>
                     <button onclick="resetAll()" style="background: #B71C1C; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Reset All</button>
+                    <button id="demoToggleBtn" onclick="toggleDemoPanel()" style="background: #666; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Hide Demos</button>
                 </div>
                 <div id="map"></div>
                 <div class="loading" id="loading">
@@ -675,7 +672,6 @@
             
             <!-- Demo Panel - Right Side -->
             <div class="demo-panel" id="demoPanel">
-                <button class="demo-toggle" onclick="toggleDemoPanel()">Hide</button>
                 <h3>Examples & Demonstrations</h3>
                 
                 <div style="padding: 15px;">
@@ -706,7 +702,7 @@
                     
                     <h4 style="margin: 20px 0 10px 0; color: #333;">Sample Data Sets</h4>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button onclick="loadSampleALICE()" style="background: white; border: 1px solid #B71C1C; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; color: #333;">
+                        <button onclick="loadFloridaALICEData()" style="background: white; border: 1px solid #B71C1C; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; color: #333;">
                             <strong style="color: #B71C1C;">Florida ALICE Data</strong><br>
                             <span style="font-size: 11px; color: #666;">Asset Limited households</span>
                         </button>
@@ -714,6 +710,41 @@
                         <button onclick="quickDemo('csv-division')" style="background: white; border: 1px solid #666; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; color: #333;">
                             <strong style="color: #666;">CSV + Geography Demo</strong><br>
                             <span style="font-size: 11px; color: #666;">How to combine data</span>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Sample CSV Data</h4>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Try these sample datasets:</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="loadSampleCSV('divisions')" style="background: #B71C1C; color: white; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; border: none;">
+                                <strong>Sample Division Data</strong><br>
+                                <span style="font-size: 11px; opacity: 0.9;">Demo division demographics</span>
+                            </button>
+                            
+                            <button onclick="loadSampleCSV('counties')" style="background: #8B0000; color: white; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; border: none;">
+                                <strong>Sample County Data</strong><br>
+                                <span style="font-size: 11px; opacity: 0.9;">Demo county data</span>
+                            </button>
+                            
+                            <button onclick="loadSampleCSV('regions')" style="background: #666; color: white; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px; border: none;">
+                                <strong>Sample Region Data</strong><br>
+                                <span style="font-size: 11px; opacity: 0.9;">Demo region analytics</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">
+                        <h4 style="margin-bottom: 10px; color: #B71C1C;">ALICE Real Data Demos</h4>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Asset Limited, Income Constrained, Employed households</p>
+                        
+                        <button onclick="loadFloridaALICEData()" style="background: #B71C1C; color: white; padding: 10px; font-size: 13px; margin: 5px 0; width: 100%; font-weight: bold; border: none; border-radius: 4px;">
+                            Load 2023 Florida ALICE Data (Manual Steps)
+                        </button>
+                        
+                        <button onclick="runFloridaALICEOneClick()" style="background: #8B0000; color: white; padding: 14px; font-size: 15px; margin: 8px 0; width: 100%; font-weight: bold; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px;">
+                            ONE-CLICK: Complete Florida ALICE Demo
                         </button>
                     </div>
                     
@@ -741,10 +772,10 @@
         // Initialize map
         function toggleDemoPanel() {
             const panel = document.getElementById('demoPanel');
-            const toggle = panel.querySelector('.demo-toggle');
+            const toggle = document.getElementById('demoToggleBtn');
             if (panel.classList.contains('collapsed')) {
                 panel.classList.remove('collapsed');
-                toggle.textContent = 'Hide';
+                toggle.textContent = 'Hide Demos';
             } else {
                 panel.classList.add('collapsed');
                 toggle.textContent = 'Show Demos';
@@ -1165,8 +1196,12 @@
                 const fieldAlias = field.alias || fieldName;
                 const fieldType = field.type || 'Unknown';
                 
-                // Add to selects (only numeric fields for bivariate)
-                if (fieldType.includes('Integer') || fieldType.includes('Double') || fieldType.includes('Single')) {
+                // Add to selects (all fields that contain numeric data)
+                const sampleValue = currentData.length > 0 ? currentData[0].properties[fieldName] : null;
+                const isNumeric = fieldType.includes('Integer') || fieldType.includes('Double') || fieldType.includes('Single') || 
+                                 fieldType.includes('Number') || (!isNaN(parseFloat(sampleValue)) && isFinite(sampleValue));
+                                 
+                if (isNumeric && fieldName !== 'OBJECTID' && fieldName !== 'GlobalID' && fieldName !== 'Shape') {
                     const xOption = document.createElement('option');
                     xOption.value = fieldName;
                     xOption.textContent = fieldAlias;
