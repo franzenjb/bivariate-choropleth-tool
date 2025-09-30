@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Enhanced Bivariate Choropleth with ArcGIS Integration</title>
+    <title>American Red Cross Bivariate Analysis Tool</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -12,7 +12,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
-            background: #f5f5f5;
+            background: #ffffff;
             color: #333;
         }
         
@@ -32,25 +32,72 @@
         
         .main-grid {
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 350px 1fr 300px;
             gap: 20px;
             margin-top: 20px;
         }
         
+        .demo-panel {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .demo-panel h3 {
+            background: #B71C1C;
+            color: white;
+            margin: -20px -20px 15px -20px;
+            padding: 15px 20px;
+            border-radius: 4px 4px 0 0;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .demo-toggle {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .demo-panel.collapsed {
+            width: 50px;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .demo-panel.collapsed h3 {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 20px 10px;
+            margin: 0;
+            height: 100%;
+            border-radius: 0 12px 12px 0;
+        }
+        
         .control-panel {
             background: white;
-            border-radius: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             max-height: calc(100vh - 150px);
             overflow-y: auto;
         }
         
         .map-container {
             background: white;
-            border-radius: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             height: calc(100vh - 150px);
             display: flex;
             flex-direction: column;
@@ -381,47 +428,7 @@
     <div class="container">
         <div class="main-grid">
             <div class="control-panel">
-                <!-- Quick Start Guide -->
-                <div class="section" style="background: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                    <h3 style="color: #333; margin-bottom: 10px;">Quick Start Demos</h3>
-                    <p style="margin: 5px 0; font-size: 13px;">Watch the tool demonstrate itself with different data:</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
-                        <button onclick="quickDemo('divisions')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="7 divisions - loads fastest!">
-                            Divisions Demo
-                        </button>
-                        <button onclick="quickDemo('regions')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="59 regions">
-                            Regions Demo
-                        </button>
-                        <button onclick="quickDemo('chapters')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="250+ chapters">
-                            Chapters Demo
-                        </button>
-                        <button onclick="quickDemo('counties')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="3,142 counties - may take longer">
-                            Counties Demo
-                        </button>
-                        <button onclick="quickDemo('csv-division')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="Upload and match CSV data">
-                            CSV + Division Demo
-                        </button>
-                        <button onclick="quickDemo('csv-county')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="CSV with county matching">
-                            CSV + County Demo
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 8px;">
-                        <button onclick="quickDemo('alice-florida')" style="background: #B71C1C; color: white; padding: 10px; font-size: 13px; border-radius: 6px; width: 100%; font-weight: bold;" title="Real ALICE data for Florida">
-                            Load Florida ALICE Data
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.3);">
-                        <p style="font-size: 11px; margin: 5px 0;">Or do it yourself:</p>
-                        <ol style="margin: 5px 0; padding-left: 20px; font-size: 11px;">
-                            <li>Click any colored button below</li>
-                            <li>Pick 2 variables to compare</li>
-                            <li>Click "Generate Map"</li>
-                        </ol>
-                    </div>
-                </div>
+                <!-- Removed demo section from main tool panel -->
                 
                 <div class="tab-container">
                     <button class="tab active" onclick="switchTab('arcgis', event)">ArcGIS</button>
@@ -648,11 +655,73 @@
 
             <div class="map-container">
                 <div id="status" class="status-message"></div>
-                <button onclick="resetAll()" style="position: absolute; top: 60px; right: 30px; z-index: 1000; background: #ff5722;">Reset All</button>
+                <div style="position: absolute; top: 60px; right: 30px; z-index: 1000; display: flex; gap: 10px;">
+                    <select id="basemapSelector" onchange="changeBasemap()" style="padding: 8px; background: white; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">
+                        <option value="osm">OpenStreetMap</option>
+                        <option value="satellite">Satellite</option>
+                        <option value="terrain">Terrain</option>
+                        <option value="topo">Topographic</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light Gray</option>
+                    </select>
+                    <button onclick="resetAll()" style="background: #B71C1C; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Reset All</button>
+                </div>
                 <div id="map"></div>
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
                     <p>Loading data...</p>
+                </div>
+            </div>
+            
+            <!-- Demo Panel - Right Side -->
+            <div class="demo-panel" id="demoPanel">
+                <button class="demo-toggle" onclick="toggleDemoPanel()">Hide</button>
+                <h3>Examples & Demonstrations</h3>
+                
+                <div style="padding: 15px;">
+                    <h4 style="margin-bottom: 10px; color: #333;">Quick Demos</h4>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Click to see examples - these are just demonstrations!</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button onclick="quickDemo('divisions')" style="background: white; border: 1px solid #ddd; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>Divisions Example</strong><br>
+                            <span style="font-size: 11px; color: #666;">7 divisions with demographics</span>
+                        </button>
+                        
+                        <button onclick="quickDemo('regions')" style="background: white; border: 1px solid #ddd; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>Regions Example</strong><br>
+                            <span style="font-size: 11px; color: #666;">59 regions analysis</span>
+                        </button>
+                        
+                        <button onclick="quickDemo('chapters')" style="background: white; border: 1px solid #ddd; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>Chapters Example</strong><br>
+                            <span style="font-size: 11px; color: #666;">226 chapters visualization</span>
+                        </button>
+                        
+                        <button onclick="quickDemo('counties')" style="background: white; border: 1px solid #ddd; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>Counties Example</strong><br>
+                            <span style="font-size: 11px; color: #666;">3,142 counties (slower)</span>
+                        </button>
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 10px 0; color: #333;">Sample Data Sets</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button onclick="loadSampleALICE()" style="background: #ffebee; border: 1px solid #ffcdd2; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>Florida ALICE Data</strong><br>
+                            <span style="font-size: 11px; color: #666;">Asset Limited households</span>
+                        </button>
+                        
+                        <button onclick="quickDemo('csv-division')" style="background: #e3f2fd; border: 1px solid #bbdefb; padding: 10px; text-align: left; cursor: pointer; border-radius: 4px;">
+                            <strong>CSV + Geography Demo</strong><br>
+                            <span style="font-size: 11px; color: #666;">How to combine data</span>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 10px; background: #fff3e0; border-radius: 4px;">
+                        <p style="font-size: 11px; color: #666; margin: 0;">
+                            <strong>Note:</strong> These are example demonstrations only. For real analysis, use the main tool panel on the left.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -670,12 +739,68 @@
         let matchedGeography = null;
 
         // Initialize map
+        function toggleDemoPanel() {
+            const panel = document.getElementById('demoPanel');
+            const toggle = panel.querySelector('.demo-toggle');
+            if (panel.classList.contains('collapsed')) {
+                panel.classList.remove('collapsed');
+                toggle.textContent = 'Hide';
+            } else {
+                panel.classList.add('collapsed');
+                toggle.textContent = 'Show Demos';
+            }
+        }
+        
+        let currentBasemap = null;
+        
         function initMap() {
             map = L.map('map').setView([39.8283, -98.5795], 4);
+            changeBasemap();
+        }
+        
+        function changeBasemap() {
+            const selector = document.getElementById('basemapSelector');
+            const selectedBasemap = selector ? selector.value : 'osm';
             
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors © CARTO'
-            }).addTo(map);
+            // Remove current basemap
+            if (currentBasemap) {
+                map.removeLayer(currentBasemap);
+            }
+            
+            // Add new basemap
+            switch(selectedBasemap) {
+                case 'satellite':
+                    currentBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles © Esri'
+                    });
+                    break;
+                case 'terrain':
+                    currentBasemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+                        attribution: 'Map tiles by Stamen Design'
+                    });
+                    break;
+                case 'topo':
+                    currentBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles © Esri'
+                    });
+                    break;
+                case 'dark':
+                    currentBasemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '© OpenStreetMap contributors © CARTO'
+                    });
+                    break;
+                case 'light':
+                    currentBasemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '© OpenStreetMap contributors © CARTO'
+                    });
+                    break;
+                default: // osm
+                    currentBasemap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    });
+            }
+            
+            currentBasemap.addTo(map);
         }
         
         // Fit bounds intelligently - show all data but zoom to continental US initially
