@@ -10,14 +10,18 @@
     <script src="https://unpkg.com/topojson@3"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+            background: #f5f5f5;
+            color: #333;
+        }
         
         .header {
-            background: linear-gradient(135deg, #B71C1C, #8B0000);
+            background: #B71C1C;
             color: white;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .container {
@@ -68,14 +72,12 @@
         .section:last-child { border-bottom: none; }
         
         .section h3 {
-            color: #B71C1C;
+            color: #333;
             margin-bottom: 15px;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 0.5px;
         }
         
         /* Animations */
@@ -155,19 +157,19 @@
         }
         
         .success-button {
-            background: #4CAF50;
+            background: #666;
         }
         
         .success-button:hover {
-            background: #388E3C;
+            background: #555;
         }
         
         .info-button {
-            background: #2196F3;
+            background: #666;
         }
         
         .info-button:hover {
-            background: #1976D2;
+            background: #555;
         }
         
         .legend-grid {
@@ -378,42 +380,42 @@
 </head>
 <body>
     <div class="header">
-        <h1>🗺️ Enhanced Bivariate Choropleth Mapper</h1>
-        <p>Professional ArcGIS Integration with Real-Time Data Analysis</p>
+        <h1>Bivariate Choropleth Analysis Tool</h1>
+        <p>ArcGIS Integration for Advanced Geographic Analysis</p>
     </div>
 
     <div class="container">
         <div class="main-grid">
             <div class="control-panel">
                 <!-- Quick Start Guide -->
-                <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                    <h3 style="color: white; margin-bottom: 10px;">🚀 Quick Start - Choose a Demo!</h3>
+                <div class="section" style="background: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">Quick Start Demos</h3>
                     <p style="margin: 5px 0; font-size: 13px;">Watch the tool demonstrate itself with different data:</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
-                        <button onclick="quickDemo('divisions')" style="background: #4CAF50; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="7 divisions - loads fastest!">
-                            🌎 Demo: Divisions (Fast!)
+                        <button onclick="quickDemo('divisions')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="7 divisions - loads fastest!">
+                            Divisions Demo
                         </button>
-                        <button onclick="quickDemo('regions')" style="background: #9c27b0; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="59 regions">
-                            🗺️ Demo: Regions
+                        <button onclick="quickDemo('regions')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="59 regions">
+                            Regions Demo
                         </button>
-                        <button onclick="quickDemo('chapters')" style="background: #2196F3; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="250+ chapters">
-                            🏢 Demo: Chapters
+                        <button onclick="quickDemo('chapters')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="250+ chapters">
+                            Chapters Demo
                         </button>
-                        <button onclick="quickDemo('counties')" style="background: #ff9800; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="3,142 counties - may take longer">
-                            🏛️ Demo: Counties
+                        <button onclick="quickDemo('counties')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="3,142 counties - may take longer">
+                            Counties Demo
                         </button>
-                        <button onclick="quickDemo('csv-division')" style="background: #e91e63; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="Upload and match CSV data">
-                            📄 Demo: CSV + Division
+                        <button onclick="quickDemo('csv-division')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="Upload and match CSV data">
+                            CSV + Division Demo
                         </button>
-                        <button onclick="quickDemo('csv-county')" style="background: #795548; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="CSV with county matching">
-                            📄 Demo: CSV + County
+                        <button onclick="quickDemo('csv-county')" style="background: #666; color: white; padding: 8px; font-size: 12px; border-radius: 4px;" title="CSV with county matching">
+                            CSV + County Demo
                         </button>
                     </div>
                     
                     <div style="margin-top: 8px;">
-                        <button onclick="quickDemo('alice-florida')" style="background: linear-gradient(135deg, #f44336, #ff9800); color: white; padding: 10px; font-size: 13px; border-radius: 6px; width: 100%; font-weight: bold;" title="Real ALICE data for Florida">
-                            🌟 Special: Florida ALICE Data (Real File!)
+                        <button onclick="quickDemo('alice-florida')" style="background: #B71C1C; color: white; padding: 10px; font-size: 13px; border-radius: 6px; width: 100%; font-weight: bold;" title="Real ALICE data for Florida">
+                            Load Florida ALICE Data
                         </button>
                     </div>
                     
@@ -436,40 +438,40 @@
                 <!-- ArcGIS Tab -->
                 <div id="arcgis-tab" class="tab-content active">
                     <div class="section">
-                        <h3>📊 Quick Connect - Just Click One!
-                            <button onclick="resetArcGISTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">🔄 Reset Tab</button>
+                        <h3>Quick Connect
+                            <button onclick="resetArcGISTab()" style="float: right; background: #666; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
-                        <p style="color: #666; font-size: 12px; margin: 10px 0;">👇 Click any button to load that geography with full demographics:</p>
-                        <div class="service-preset" onclick="loadARCCounties()" style="background: #fff3e0; border: 2px solid #ff9800;">
-                            <span class="service-icon">🏛️</span>
+                        <p style="color: #666; font-size: 12px; margin: 10px 0;">Select a geography layer to load with full demographics:</p>
+                        <div class="service-preset" onclick="loadARCCounties()" style="background: #f9f9f9; border: 2px solid #ddd;">
+                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">CO</span>
                             <div>
                                 <div><strong>ARC County with Demographics</strong></div>
                                 <div class="help-text">3,142 US counties with enhanced pop-ups & full demographics</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossDivisions()" style="background: #e8f5e9; border: 2px solid #4CAF50;">
-                            <span class="service-icon">🌎</span>
+                        <div class="service-preset" onclick="loadRedCrossDivisions()" style="background: #f9f9f9; border: 2px solid #ddd;">
+                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">DV</span>
                             <div>
                                 <div><strong>ARC Divisions with Demographics</strong></div>
                                 <div class="help-text">7 divisions with demographic data</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossRegions()" style="background: #f3e5f5; border: 2px solid #9c27b0;">
-                            <span class="service-icon">🗺️</span>
+                        <div class="service-preset" onclick="loadRedCrossRegions()" style="background: #f9f9f9; border: 2px solid #ddd;">
+                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">RG</span>
                             <div>
                                 <div><strong>ARC Regions with Demographics</strong></div>
                                 <div class="help-text">59 regions with demographic data</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossChapters()" style="background: #e3f2fd; border: 2px solid #2196F3;">
-                            <span class="service-icon">🏢</span>
+                        <div class="service-preset" onclick="loadRedCrossChapters()" style="background: #f9f9f9; border: 2px solid #ddd;">
+                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">CH</span>
                             <div>
                                 <div><strong>ARC Chapters with Demographics</strong></div>
                                 <div class="help-text">250+ chapters with demographics</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadARCStates()" style="background: #e0f2f1; border: 2px solid #009688;">
-                            <span class="service-icon">🇺🇸</span>
+                        <div class="service-preset" onclick="loadARCStates()" style="background: #f9f9f9; border: 2px solid #ddd;">
+                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">ST</span>
                             <div>
                                 <div><strong>ARC States</strong></div>
                                 <div class="help-text">50 US states with boundaries</div>
@@ -478,7 +480,7 @@
                     </div>
 
                     <div class="section">
-                        <h3>🔗 Custom ArcGIS Service</h3>
+                        <h3>Custom ArcGIS Service</h3>
                         <input type="url" id="customServiceUrl" placeholder="https://services.arcgis.com/.../FeatureServer/0">
                         <div class="help-text">Enter your ArcGIS Feature Service URL (must be public)</div>
                         <button onclick="loadCustomService()" class="info-button" style="margin-top: 10px; width: 100%;">
@@ -487,7 +489,7 @@
                     </div>
 
                     <div class="section">
-                        <h3>🔍 Service by ID</h3>
+                        <h3>Service by ID</h3>
                         <input type="text" id="serviceId" placeholder="Enter service ID or item ID">
                         <select id="orgSelect" style="margin-top: 10px;">
                             <option value="8DAUcrpQcpyLMznu">Red Cross Organization</option>
@@ -506,7 +508,7 @@
                 <div id="csv-tab" class="tab-content">
                     <div class="section">
                         <h3>📁 Upload CSV Data
-                            <button onclick="resetCSVTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">🔄 Reset Tab</button>
+                            <button onclick="resetCSVTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
                         <input type="file" id="csvFile" accept=".csv">
                         <div class="help-text">Upload a CSV file with data to match to geographic boundaries</div>
@@ -528,7 +530,7 @@
                     </div>
 
                     <div class="section">
-                        <h3>🗺️ Select Geography to Match</h3>
+                        <h3>Select Geography to Match</h3>
                         <select id="geographyType" onchange="handleGeographyChange()">
                             <option value="">-- Select Geography --</option>
                             <option value="arc_counties">ARC Counties (3,142 counties - match by FIPS/County)</option>
@@ -560,7 +562,7 @@
                 <div id="manual-tab" class="tab-content">
                     <div class="section">
                         <h3>🌐 Direct Service URL
-                            <button onclick="resetManualTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">🔄 Reset Tab</button>
+                            <button onclick="resetManualTab()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
                         <textarea id="directUrl" rows="3" placeholder="Paste full ArcGIS URL here"></textarea>
                         <button onclick="parseAndLoadUrl()" class="info-button" style="margin-top: 10px; width: 100%;">
@@ -571,8 +573,8 @@
 
                 <!-- Field Selection -->
                 <div class="section" id="fieldSelection" style="display: none;">
-                    <h3>📊 Available Fields
-                        <button onclick="resetFieldSelection()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">🔄 Clear</button>
+                    <h3>Available Fields
+                        <button onclick="resetFieldSelection()" style="float: right; background: #ff5722; padding: 6px 12px; font-size: 12px;">Clear</button>
                     </h3>
                     <div id="fieldCount" class="help-text"></div>
                     <div class="field-list" id="fieldList"></div>
@@ -657,7 +659,7 @@
 
             <div class="map-container">
                 <div id="status" class="status-message"></div>
-                <button onclick="resetAll()" style="position: absolute; top: 60px; right: 30px; z-index: 1000; background: #ff5722;">🔄 Reset All</button>
+                <button onclick="resetAll()" style="position: absolute; top: 60px; right: 30px; z-index: 1000; background: #ff5722;">Reset All</button>
                 <div id="map"></div>
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -944,7 +946,7 @@
                 }
                 
                 // Fetch actual data with geometry
-                const dataUrl = url.replace('?f=json', '') + '/query?where=1=1&outFields=*&f=geojson&returnGeometry=true';
+                const dataUrl = url.replace('?f=json', '') + '/query?where=1=1&outFields=*&f=geojson&returnGeometry=true&resultRecordCount=5000';
                 const dataResponse = await fetch(dataUrl);
                 if (!dataResponse.ok) throw new Error('Failed to fetch service data');
                 const geoData = await dataResponse.json();
@@ -1496,7 +1498,7 @@
                 }
                 
                 // Fetch geography data with filter
-                const dataUrl = serviceUrl + '/query?where=' + encodeURIComponent(whereClause) + '&outFields=*&f=geojson&returnGeometry=true';
+                const dataUrl = serviceUrl + '/query?where=' + encodeURIComponent(whereClause) + '&outFields=*&f=geojson&returnGeometry=true&resultRecordCount=5000';
                 const response = await fetch(dataUrl);
                 if (!response.ok) throw new Error('Failed to fetch geography');
                 const geoData = await response.json();
@@ -1687,7 +1689,7 @@
                             genBtn.innerHTML = '⭐ FINAL STEP - Generate Your Map!';
                         }
                         
-                        showStatus('✅ Variables selected! Click "FINAL STEP" to generate your bivariate map!', 'success');
+                        showStatus('Variables selected! Click "FINAL STEP" to generate your bivariate map!', 'success');
                     }, 1000);
                 }
                 
@@ -1781,7 +1783,7 @@
             await new Promise(resolve => setTimeout(resolve, 2000));
             
             // Step 2: Match data
-            showStatus('🔄 Step 2: Matching to 67 Florida counties...', 'info');
+            showStatus('Step 2: Matching to 67 Florida counties...', 'info');
             matchAndMergeData();
             
             // Wait for matching to complete (check for field selection to appear)
@@ -1795,7 +1797,7 @@
             }
             
             if (!matchingComplete) {
-                showStatus('⚠️ Matching is taking longer than expected. Please try manually.', 'error');
+                showStatus('Matching is taking longer than expected. Please try manually.', 'error');
                 return;
             }
             
@@ -1811,7 +1813,7 @@
             
             // Check if map was generated
             if (document.getElementById('legendSection').style.display === 'block') {
-                showStatus('✅ Complete! Florida ALICE map ready. Purple areas = high vulnerability + high income!', 'success');
+                showStatus('Complete! Florida ALICE map ready. Purple areas = high vulnerability + high income!', 'success');
             } else {
                 showStatus('✨ Processing complete. Click "Generate Bivariate Map" if needed.', 'info');
             }
@@ -1932,7 +1934,7 @@
                     matchBtn.innerHTML = '⭐ CLICK HERE TO CONTINUE - Match Florida Counties';
                 }
                 
-                showStatus('✅ Step 1 Complete! Now click the green "CLICK HERE TO CONTINUE" button below to match the data to Florida counties.', 'success');
+                showStatus('Step 1 Complete! Now click the green "CLICK HERE TO CONTINUE" button below to match the data to Florida counties.', 'success');
                 
                 // Add visual arrow pointing to button
                 const arrow = document.createElement('div');
@@ -2225,7 +2227,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ Division demo complete! Notice how the 7 divisions show different color patterns. Click any division for details!', 'success');
+                            showStatus('Division demo complete! Notice how the 7 divisions show different color patterns. Click any division for details!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2248,7 +2250,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ Region demo complete! 59 regions colored by age vs home values. Purple = older & expensive areas!', 'success');
+                            showStatus('Region demo complete! 59 regions colored by age vs home values. Purple = older & expensive areas!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2271,7 +2273,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ Chapter demo complete! Each of 250+ chapters colored by households vs unemployment. Zoom in to explore!', 'success');
+                            showStatus('Chapter demo complete! Each of 250+ chapters colored by households vs unemployment. Zoom in to explore!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2352,7 +2354,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ County demo complete! All 3,142 counties colored by Population vs Income. Purple = populous & wealthy. Zoom to your area!', 'success');
+                            showStatus('County demo complete! All 3,142 counties colored by Population vs Income. Purple = populous & wealthy. Zoom to your area!', 'success');
                         }, 3000);
                     }, 3000);
                 }
@@ -2410,7 +2412,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ CSV demo complete! This shows how to combine your data with geographic demographics!', 'success');
+                            showStatus('CSV demo complete! This shows how to combine your data with geographic demographics!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2466,7 +2468,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ CSV County demo complete! Shows 10 sample counties matched by FIPS. Your CSV can have thousands!', 'success');
+                            showStatus('CSV County demo complete! Shows 10 sample counties matched by FIPS. Your CSV can have thousands!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2646,7 +2648,7 @@
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('✅ ALICE Demo complete! Purple areas = High vulnerability + High income (interesting paradox!). This data is crucial for Red Cross disaster planning!', 'success');
+                            showStatus('ALICE Demo complete! Purple areas = High vulnerability + High income (interesting paradox!). This data is crucial for Red Cross disaster planning!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2671,7 +2673,7 @@
             
             // Show welcome message
             setTimeout(() => {
-                showStatus('👋 Welcome! Click "Run Demo" above for a quick tutorial, or click any colored button to start exploring!', 'info');
+                showStatus('Welcome! Click "Run Demo" above for a quick tutorial, or click any colored button to start exploring!', 'info');
             }, 1000);
         });
     </script>
