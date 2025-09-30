@@ -1251,7 +1251,11 @@
                     isNumeric = numericCount >= Math.ceil(sampleSize * 0.6);
                 }
                                  
-                if (isNumeric && fieldName !== 'OBJECTID' && fieldName !== 'GlobalID' && fieldName !== 'Shape') {
+                // Filter out problematic fields
+                const isProblemField = (fieldName.toLowerCase().includes('unemp') && fieldName.includes('WAVG')) ||
+                                     fieldName === 'Unemp_Rate_2023_WAVG';
+                
+                if (isNumeric && fieldName !== 'OBJECTID' && fieldName !== 'GlobalID' && fieldName !== 'Shape' && !isProblemField) {
                     const xOption = document.createElement('option');
                     xOption.value = fieldName;
                     xOption.textContent = fieldAlias;
@@ -1263,14 +1267,16 @@
                     ySelect.appendChild(yOption);
                 }
                 
-                // Add to field list
-                const fieldItem = document.createElement('div');
-                fieldItem.className = 'field-item';
-                fieldItem.innerHTML = `
-                    <strong>${fieldAlias}</strong>
-                    <span style="float: right; color: #666; font-size: 11px;">${fieldType.replace('esriFieldType', '')}</span>
-                `;
-                fieldList.appendChild(fieldItem);
+                // Add to field list (skip problem fields)
+                if (!isProblemField) {
+                    const fieldItem = document.createElement('div');
+                    fieldItem.className = 'field-item';
+                    fieldItem.innerHTML = `
+                        <strong>${fieldAlias}</strong>
+                        <span style="float: right; color: #666; font-size: 11px;">${fieldType.replace('esriFieldType', '')}</span>
+                    `;
+                    fieldList.appendChild(fieldItem);
+                }
             });
         }
 
@@ -2398,16 +2404,20 @@
             html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${name}</h3>`;
             html += `<div style="color: #666; font-size: 11px; margin-bottom: 10px;">${serviceName}</div>`;
             
-            // Show top 10 meaningful fields
+            // Show top 10 meaningful fields (excluding problematic unemployment field)
             const priorityFields = ['State', 'County', 'Chapter', 'Region', 'Division', 'FIPS', 
                                   'Pop_2023', 'Total_HH_2023', 'Med_HH_Inc_2023', 'Med_Home_Val_2023',
-                                  'Median_Age_2023', 'Diversity_Index_2023', 'Unemp_Rate_2023'];
+                                  'Median_Age_2023', 'Diversity_Index_2023'];
             
             html += `<table style="width: 100%; font-size: 12px;">`;
             let fieldCount = 0;
             
             priorityFields.forEach(field => {
-                if (props[field] && fieldCount < 10) {
+                // Skip problematic fields
+                const isProblemField = (field.toLowerCase().includes('unemp') && field.includes('WAVG')) ||
+                                     field === 'Unemp_Rate_2023_WAVG';
+                                     
+                if (props[field] && fieldCount < 10 && !isProblemField) {
                     const label = field.replace(/_/g, ' ').replace(/2023/g, '').trim();
                     html += `<tr><td style="color: #666; padding: 3px 0;">${label}:</td>`;
                     html += `<td style="text-align: right; padding: 3px 0;"><strong>${formatValue(props[field], field)}</strong></td></tr>`;
@@ -2417,8 +2427,12 @@
             
             // Add any other interesting fields
             for (let key in props) {
+                // Skip problematic fields
+                const isProblemField = (key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
+                                     key === 'Unemp_Rate_2023_WAVG';
+                                     
                 if (fieldCount < 12 && !priorityFields.includes(key) && props[key] && 
-                    key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID') {
+                    key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID' && !isProblemField) {
                     const label = key.replace(/_/g, ' ');
                     html += `<tr><td style="color: #888; padding: 3px 0; font-size: 11px;">${label}:</td>`;
                     html += `<td style="text-align: right; padding: 3px 0; font-size: 11px;">${formatValue(props[key], key)}</td></tr>`;
