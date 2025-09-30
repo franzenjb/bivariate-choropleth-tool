@@ -280,24 +280,18 @@
         }
         
         .service-preset {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            background: #f8f8f8;
-            border-radius: 6px;
+            padding: 12px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             cursor: pointer;
-            margin: 5px 0;
-            transition: all 0.3s;
+            margin: 8px 0;
+            transition: background 0.2s, border 0.2s;
         }
         
         .service-preset:hover {
-            background: #e3f2fd;
-            transform: translateX(5px);
-        }
-        
-        .service-icon {
-            font-size: 20px;
+            background: #f5f5f5;
+            border-color: #B71C1C;
         }
         
         .correlation-meter {
@@ -442,39 +436,34 @@
                             <button onclick="resetArcGISTab()" style="float: right; background: #666; padding: 6px 12px; font-size: 12px;">Reset</button>
                         </h3>
                         <p style="color: #666; font-size: 12px; margin: 10px 0;">Select a geography layer to load with full demographics:</p>
-                        <div class="service-preset" onclick="loadARCCounties()" style="background: #f9f9f9; border: 2px solid #ddd;">
-                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">CO</span>
+                        <div class="service-preset" onclick="loadARCCounties()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
-                                <div><strong>ARC County with Demographics</strong></div>
-                                <div class="help-text">3,142 US counties with enhanced pop-ups & full demographics</div>
+                            <div><strong>Counties</strong></div>
+                            <div class="help-text" style="font-size: 12px; color: #666;">3,142 US counties with demographics</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossDivisions()" style="background: #f9f9f9; border: 2px solid #ddd;">
-                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">DV</span>
+                        <div class="service-preset" onclick="loadRedCrossDivisions()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
-                                <div><strong>ARC Divisions with Demographics</strong></div>
-                                <div class="help-text">7 divisions with demographic data</div>
+                            <div><strong>Divisions</strong></div>
+                            <div class="help-text" style="font-size: 12px; color: #666;">7 Red Cross divisions</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossRegions()" style="background: #f9f9f9; border: 2px solid #ddd;">
-                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">RG</span>
+                        <div class="service-preset" onclick="loadRedCrossRegions()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
-                                <div><strong>ARC Regions with Demographics</strong></div>
-                                <div class="help-text">59 regions with demographic data</div>
+                            <div><strong>Regions</strong></div>
+                            <div class="help-text" style="font-size: 12px; color: #666;">59 Red Cross regions</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadRedCrossChapters()" style="background: #f9f9f9; border: 2px solid #ddd;">
-                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">CH</span>
+                        <div class="service-preset" onclick="loadRedCrossChapters()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
-                                <div><strong>ARC Chapters with Demographics</strong></div>
-                                <div class="help-text">250+ chapters with demographics</div>
+                            <div><strong>Chapters</strong></div>
+                            <div class="help-text" style="font-size: 12px; color: #666;">Red Cross local chapters</div>
                             </div>
                         </div>
-                        <div class="service-preset" onclick="loadARCStates()" style="background: #f9f9f9; border: 2px solid #ddd;">
-                            <span class="service-icon" style="font-weight: bold; color: #B71C1C;">ST</span>
+                        <div class="service-preset" onclick="loadARCStates()" style="background: #f9f9f9; border: 1px solid #ddd; cursor: pointer; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
                             <div>
-                                <div><strong>ARC States</strong></div>
-                                <div class="help-text">50 US states with boundaries</div>
+                            <div><strong>States</strong></div>
+                            <div class="help-text" style="font-size: 12px; color: #666;">50 US states</div>
                             </div>
                         </div>
                     </div>
@@ -593,8 +582,8 @@
                         </select>
                     </div>
                     
-                    <button onclick="generateBivariateMap()" class="success-button" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px;">
-                        🎨 Generate Bivariate Map (Click Me!)
+                    <button onclick="generateBivariateMap()" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Generate Bivariate Map
                     </button>
                 </div>
 
