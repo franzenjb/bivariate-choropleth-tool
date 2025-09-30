@@ -2188,6 +2188,67 @@
             }
         }
         
+        // Format values for display
+        function formatValue(value, fieldName) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            
+            // Handle percentage fields (unemployment rates, etc.)
+            if (fieldName && (fieldName.toLowerCase().includes('rate') || 
+                             fieldName.toLowerCase().includes('percent') ||
+                             fieldName.toLowerCase().includes('pct'))) {
+                // Handle unemployment rates specifically - they should never exceed ~30%
+                if (fieldName.toLowerCase().includes('unemp')) {
+                    if (num <= 1) {
+                        // Value is decimal (0.052 = 5.2%)
+                        return (num * 100).toFixed(1) + '%';
+                    } else if (num <= 30) {
+                        // Reasonable unemployment percentage (5.2%)
+                        return num.toFixed(1) + '%';
+                    } else {
+                        // Likely bad data or needs conversion - cap at reasonable rate
+                        console.warn(`Suspicious unemployment rate: ${num}%, capping at 30%`);
+                        return 'Data Error';
+                    }
+                }
+                
+                // Other percentage fields
+                if (num <= 1) {
+                    return (num * 100).toFixed(1) + '%';
+                } else if (num <= 100) {
+                    return num.toFixed(1) + '%';
+                } else {
+                    // Likely a raw number that needs to be converted
+                    return (num / 100).toFixed(1) + '%';
+                }
+            }
+            
+            // Handle income/currency fields
+            if (fieldName && (fieldName.toLowerCase().includes('income') || 
+                             fieldName.toLowerCase().includes('val') ||
+                             fieldName.toLowerCase().includes('wage'))) {
+                return '$' + num.toLocaleString();
+            }
+            
+            // Handle population/count fields
+            if (fieldName && (fieldName.toLowerCase().includes('pop') || 
+                             fieldName.toLowerCase().includes('hh') ||
+                             fieldName.toLowerCase().includes('total'))) {
+                return num.toLocaleString();
+            }
+            
+            // Default formatting
+            if (num >= 1000) {
+                return num.toLocaleString();
+            } else if (num % 1 === 0) {
+                return num.toString();
+            } else {
+                return num.toFixed(1);
+            }
+        }
+
         // Build enhanced popup for bivariate analysis
         function buildEnhancedPopup(props, xVar, yVar, xVal, yVal) {
             const name = props.NAME || props.County || props.Chapter || props.Region || props.Division || 'Feature';
@@ -2289,41 +2350,6 @@
             html += `</div></div>`;
             
             return html;
-        }
-        
-        // Format values for display
-        function formatValue(value, fieldName) {
-            // Handle various falsy values but allow 0
-            if (value === null || value === undefined || value === '') return 'N/A';
-            if (value === 0) return '0';  // Explicitly handle zero values
-            
-            const name = (fieldName || '').toLowerCase();
-            
-            // Format currency
-            if (name.includes('income') || name.includes('inc') || name.includes('val') || name.includes('wage')) {
-                if (typeof value === 'number') {
-                    return '$' + value.toLocaleString();
-                }
-            }
-            
-            // Format percentages
-            if (name.includes('rate') || name.includes('percent') || name.includes('pct')) {
-                if (typeof value === 'number') {
-                    return value.toFixed(1) + '%';
-                }
-            }
-            
-            // Format large numbers with commas
-            if (typeof value === 'number') {
-                if (value > 999) {
-                    return value.toLocaleString();
-                }
-                if (value % 1 !== 0) {
-                    return value.toFixed(2);
-                }
-            }
-            
-            return value;
         }
         
         // Quick demo function with different types
