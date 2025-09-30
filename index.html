@@ -808,7 +808,7 @@
         
         async function loadRedCrossDivisions() {
             // Use demographics service for full data, or Master Geography Layer 1 for boundaries
-            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Division%20with%20Demographics/FeatureServer/0';
+            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/1';
             // Alternative without demographics:
             // const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/1';
             await loadArcGISService(url, 'ARC Divisions with Demographics');
@@ -816,7 +816,7 @@
 
         async function loadRedCrossChapters() {
             // Use demographics service for full data, or Master Geography Layer 4 for boundaries
-            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Chapter%20with%20Demographics/FeatureServer/0';
+            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/4';
             // Alternative without demographics:
             // const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/4';
             await loadArcGISService(url, 'ARC Chapters with Demographics');
@@ -824,7 +824,7 @@
 
         async function loadRedCrossRegions() {
             // Use demographics service for full data, or Master Geography Layer 2 for boundaries
-            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Region%20with%20Demographics/FeatureServer/0';
+            const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/2';
             // Alternative without demographics:
             // const url = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/2';
             await loadArcGISService(url, 'ARC Regions with Demographics');
@@ -1462,13 +1462,13 @@
                         serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/5';
                         break;
                     case 'divisions':
-                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Division%20with%20Demographics/FeatureServer/0';
+                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/1';
                         break;
                     case 'chapters':
-                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Chapter%20with%20Demographics/FeatureServer/0';
+                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/4';
                         break;
                     case 'regions':
-                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/ARC%20Region%20with%20Demographics/FeatureServer/0';
+                        serviceUrl = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/2';
                         break;
                     default:
                         throw new Error('Geography type not supported');
