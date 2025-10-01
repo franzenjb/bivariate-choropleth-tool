@@ -1069,12 +1069,13 @@
             }
             
             // Decision logic:
-            // If 90% or more of data is in continental US, zoom to continental
-            // If significant data outside (>10%), show wider view
+            // For Red Cross divisions/regions, always use continental view for usability
+            // For other data types, use ratio-based logic
             const continentalRatio = totalCount > 0 ? continentalCount / totalCount : 1;
+            const isRedCrossOrgData = totalCount <= 10; // Divisions (7) or Regions (59) - small organizational datasets
             
-            if (continentalRatio >= 0.9) {
-                // Most data is continental - zoom to continental US
+            if (isRedCrossOrgData || continentalRatio >= 0.9) {
+                // Red Cross org data or most data is continental - zoom to continental US
                 map.fitBounds(continentalBounds, { padding: [20, 20] });
             } else if (continentalRatio >= 0.7) {
                 // Some data outside - use slightly expanded view
