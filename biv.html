@@ -2897,51 +2897,6 @@
             
             // Add any other interesting fields not already shown
             const allPriorityFields = Object.values(fieldCategories).flat();
-            for (let key in props) {
-                // Skip problematic fields and technical metadata users don't need
-                const isProblemField = ((key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
-                                     key === 'Unemp_Rate_2023_WAVG' ||
-                                     key === 'Unemp_Rate_2023_CALC' ||
-                                     key === 'Avg_Home_Val_2023_WAVG' ||
-                                     key.toLowerCase().includes('avg_') ||
-                                     key.toLowerCase().includes('average') ||
-                                     (key.includes('WAVG') && key.toLowerCase().includes('val')) ||
-                                     (key.includes('CALC') && key.toLowerCase().includes('rate')) ||
-                                     // Technical geographic fields users don't need
-                                     key.toLowerCase().includes('shape') ||
-                                     key.toLowerCase().includes('area') ||
-                                     key.toLowerCase().includes('length') ||
-                                     key.toLowerCase().includes('acres') ||
-                                     key.toLowerCase().includes('sqmi') ||
-                                     key.toLowerCase().includes('sq_mi') ||
-                                     // Division codes and technical IDs
-                                     key.toLowerCase().includes('div_code') ||
-                                     key.toLowerCase().includes('division_code')) &&
-                                     key !== 'Calculated_Unemp_Rate_2023';
-                                     
-                if (fieldCount < 15 && !allPriorityFields.includes(key) && props[key] && 
-                    key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID' && !isProblemField) {
-                    const bgColor = rowIndex % 2 === 0 ? '#f8f9fa' : '#ffffff';
-                    const label = key.replace(/_/g, ' ').replace(/2023/g, '').replace(/SUM/g, '').trim();
-                    
-                    html += `<tr style="background-color: ${bgColor};">`;
-                    html += `<td style="color: #888; padding: 6px 8px; border: none; font-size: 11px;">${label}:</td>`;
-                    html += `<td style="text-align: right; padding: 6px 8px; border: none; font-size: 11px;">${formatValue(props[key], key)}</td>`;
-                    html += `</tr>`;
-                    fieldCount++;
-                    rowIndex++;
-                }
-            }
-            
-            html += `</table>`;
-            
-            // Add accordion for all fields
-            html += buildFieldAccordion(props);
-            
-            html += `</div>`;
-            
-            return html;
-        }
         
         // Quick demo function with different types
         async function quickDemo(demoType) {
