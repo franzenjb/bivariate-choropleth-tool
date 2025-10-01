@@ -2634,65 +2634,67 @@
         function buildFieldAccordion(props) {
             const accordionId = 'accordion_' + Math.random().toString(36).substr(2, 9);
             
-            // Categorize fields
+            // Fields already shown in main popup - don't duplicate
+            const alreadyShown = [
+                'Region', 'Division', 'Pop_2023', 'Total_Pop_2023_SUM', 'Pop_2028', 
+                'Unemp_Pop_2023_SUM', 'Calculated_Unemp_Rate_2023',
+                'Region_HQ_City', 'Region_HQ_State', 'Region_HQ_Zip', 'FEMA_Region',
+                'NAME', 'County', 'Chapter', 'State'
+            ];
+            
+            // Categorize remaining useful fields
             const categories = {
                 'Demographics': [],
-                'Economics': [],
+                'Economics': [],  
                 'Housing': [],
-                'Geography': [],
                 'Other': []
             };
             
             Object.keys(props).forEach(key => {
-                // Skip system fields, problematic fields, and technical metadata users don't need
-                if (key === 'OBJECTID' || key === 'Shape' || key === 'GlobalID' || 
-                    (((key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
-                    key === 'Unemp_Rate_2023_WAVG' ||
-                    key === 'Unemp_Rate_2023_CALC' ||
-                    key === 'Avg_Home_Val_2023_WAVG' ||
-                    key.toLowerCase().includes('avg_') ||
-                    key.toLowerCase().includes('average') ||
-                    (key.includes('WAVG') && key.toLowerCase().includes('val')) ||
-                    (key.includes('CALC') && key.toLowerCase().includes('rate')) ||
-                    // Technical geographic fields users don't need
-                    key.toLowerCase().includes('shape') ||
-                    key.toLowerCase().includes('area') ||
-                    key.toLowerCase().includes('length') ||
-                    key.toLowerCase().includes('acres') ||
-                    key.toLowerCase().includes('sqmi') ||
-                    key.toLowerCase().includes('sq_mi') ||
-                    // Division codes and technical IDs
-                    key.toLowerCase().includes('div_code') ||
-                    key.toLowerCase().includes('division_code')) &&
-                    key !== 'Calculated_Unemp_Rate_2023')) {
-                    return;
-                }
-                
                 const value = props[key];
+                
+                // Skip if already shown in main popup
+                if (alreadyShown.includes(key)) return;
+                
+                // Skip system/technical fields
+                if (key === 'OBJECTID' || key === 'Shape' || key === 'GlobalID' || 
+                    key.includes('Shape_') || key.includes('WAVG') || key.includes('CALC') ||
+                    key.includes('_code') || key.includes('RCODE') || key.includes('DCODE') ||
+                    key.includes('Region_HQ_') || key.includes('Time_Zone')) return;
+                
+                // Skip invalid/meaningless data
+                if (value === 0 && (key.includes('Income') || key.includes('Emp_Pop'))) return;
                 if (value === null || value === undefined || value === '') return;
                 
-                const keyLower = key.toLowerCase();
-                if (keyLower.includes('pop') || keyLower.includes('age') || keyLower.includes('diversity') || 
-                    keyLower.includes('race') || keyLower.includes('ethnicity') || keyLower.includes('hh')) {
-                    categories.Demographics.push({key, value});
-                } else if (keyLower.includes('income') || keyLower.includes('inc') || keyLower.includes('poverty') || 
-                          keyLower.includes('employ') || keyLower.includes('wage')) {
-                    categories.Economics.push({key, value});
-                } else if (keyLower.includes('home') || keyLower.includes('house') || keyLower.includes('rent') || 
-                          keyLower.includes('val') || keyLower.includes('unit')) {
-                    categories.Housing.push({key, value});
-                } else if (keyLower.includes('fips') || keyLower.includes('county') || keyLower.includes('state') || 
-                          keyLower.includes('region') || keyLower.includes('chapter') || keyLower.includes('division') ||
-                          keyLower.includes('sq_mi') || keyLower.includes('acres')) {
-                    categories.Geography.push({key, value});
+                // Format value properly (round population density, etc.)
+                let formattedValue = value;
+                if (key.includes('Pop_Den') && typeof value === 'number') {
+                    formattedValue = Math.round(value);
+                }
+                
+                // Categorize into logical groups
+                if (key.includes('Pop') || key.includes('Age') || key.includes('Youth') || 
+                    key.includes('Adult') || key.includes('Senior') || key.includes('Male') || 
+                    key.includes('Female') || key.includes('White') || key.includes('Black') || 
+                    key.includes('Hispanic') || key.includes('Asian') || key.includes('Diversity')) {
+                    categories.Demographics.push({key, value: formattedValue});
+                } else if (key.includes('Income') || key.includes('HH_Inc') || key.includes('Home_Val') || 
+                          key.includes('Emp') || key.includes('Unemp')) {
+                    categories.Economics.push({key, value: formattedValue});
+                } else if (key.includes('HH') || key.includes('Housing') || key.includes('Renter') || 
+                          key.includes('Owner') || key.includes('Vacant')) {
+                    categories.Housing.push({key, value: formattedValue});
                 } else {
-                    categories.Other.push({key, value});
+                    categories.Other.push({key, value: formattedValue});
                 }
             });
             
+            // Count only the useful fields we're showing
+            const totalUsefulFields = Object.values(categories).reduce((sum, cat) => sum + cat.length, 0);
+            
             let html = `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">`;
             html += `<div style="cursor: pointer; padding: 8px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: 12px; font-weight: bold; color: #495057;" onclick="toggleAccordion('${accordionId}')">`;
-            html += `<span>📊 View All ${Object.keys(props).length} Fields</span>`;
+            html += `<span>📊 View ${totalUsefulFields} Additional Fields</span>`;
             html += `<span id="${accordionId}_arrow" style="float: right; transition: transform 0.2s;">▼</span>`;
             html += `</div>`;
             html += `<div id="${accordionId}" style="display: none; max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-top: none; background: white;">`;
