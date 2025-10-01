@@ -462,6 +462,31 @@
 
                 <!-- ArcGIS Tab -->
                 <div id="arcgis-tab" class="tab-content active">
+                    <!-- X/Y Variable Selection - Top Priority -->
+                    <div class="section" id="arcgisVariableSelection" style="display: none;">
+                        <h3>📊 Create Bivariate Map</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>X-Axis Variable:</label>
+                            <select id="arcgisXVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
+                                <option value="">-- Select X Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 This dropdown will show ALL demographic fields (income, population, age, etc.) after you load geography data below</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>Y-Axis Variable:</label>
+                            <select id="arcgisYVariable" title="Choose your second variable to compare against the X variable">
+                                <option value="">-- Select Y Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
+                        </div>
+                        
+                        <button onclick="generateBivariateMap()" style="width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">
+                            Generate Bivariate Map
+                        </button>
+                    </div>
+
                     <div class="section">
                         <h3>Quick Connect
                             <button onclick="resetArcGISTab()" style="float: right; background: #666; padding: 6px 12px; font-size: 12px;">Reset</button>
@@ -508,28 +533,34 @@
                         </div>
                     </div>
 
+                    <!-- Custom Service Accordion -->
                     <div class="section">
-                        <h3>Custom ArcGIS Service</h3>
-                        <input type="url" id="customServiceUrl" placeholder="https://services.arcgis.com/.../FeatureServer/0">
-                        <div class="help-text">Enter your ArcGIS Feature Service URL (must be public)</div>
-                        <button onclick="loadCustomService()" class="info-button" style="margin-top: 10px; width: 100%;">
-                            Connect to Service
-                        </button>
-                    </div>
+                        <div style="cursor: pointer; padding: 12px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: 14px; font-weight: bold; color: #495057;" onclick="toggleAccordion('customArcGISAccordion')">
+                            <span>🌐 Custom ArcGIS Service & Service by ID</span>
+                            <span id="customArcGISAccordion_arrow" style="float: right; transition: transform 0.2s;">▼</span>
+                        </div>
+                        <div id="customArcGISAccordion" style="display: none; border: 1px solid #dee2e6; border-top: none; background: white; padding: 15px; border-radius: 0 0 4px 4px;">
+                            
+                            <h4 style="margin: 0 0 10px 0; color: #B71C1C;">Custom ArcGIS Service</h4>
+                            <input type="url" id="customServiceUrl" placeholder="https://services.arcgis.com/.../FeatureServer/0" style="width: 100%; margin-bottom: 5px;">
+                            <div class="help-text" style="margin-bottom: 10px;">Enter your ArcGIS Feature Service URL (must be public)</div>
+                            <button onclick="loadCustomService()" class="info-button" style="width: 100%; margin-bottom: 20px;">
+                                Connect to Service
+                            </button>
 
-                    <div class="section">
-                        <h3>Service by ID</h3>
-                        <input type="text" id="serviceId" placeholder="Enter service ID or item ID">
-                        <select id="orgSelect" style="margin-top: 10px;">
-                            <option value="8DAUcrpQcpyLMznu">Red Cross Organization</option>
-                            <option value="V6ZHFr6zdgNZuVG0">Public Demographics</option>
-                            <option value="P3ePLMYs2RVChkJx">ESRI Public</option>
-                            <option value="custom">Custom Org ID</option>
-                        </select>
-                        <input type="text" id="customOrgId" placeholder="Custom org ID" style="display: none; margin-top: 10px;">
-                        <button onclick="loadServiceById()" class="info-button" style="margin-top: 10px; width: 100%;">
-                            Load by ID
-                        </button>
+                            <h4 style="margin: 0 0 10px 0; color: #B71C1C;">Service by ID</h4>
+                            <input type="text" id="serviceId" placeholder="Enter service ID or item ID" style="width: 100%; margin-bottom: 10px;">
+                            <select id="orgSelect" style="width: 100%; margin-bottom: 10px;">
+                                <option value="8DAUcrpQcpyLMznu">Red Cross Organization</option>
+                                <option value="V6ZHFr6zdgNZuVG0">Public Demographics</option>
+                                <option value="P3ePLMYs2RVChkJx">ESRI Public</option>
+                                <option value="custom">Custom Org ID</option>
+                            </select>
+                            <input type="text" id="customOrgId" placeholder="Custom org ID" style="display: none; width: 100%; margin-bottom: 10px;">
+                            <button onclick="loadServiceById()" class="info-button" style="width: 100%;">
+                                Load by ID
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1283,17 +1314,23 @@
         // Display fields
         function displayFields() {
             const fieldSection = document.getElementById('fieldSelection');
+            const arcgisVariableSection = document.getElementById('arcgisVariableSelection');
             const fieldList = document.getElementById('fieldList');
             const fieldCount = document.getElementById('fieldCount');
             const xSelect = document.getElementById('xVariable');
             const ySelect = document.getElementById('yVariable');
+            const arcgisXSelect = document.getElementById('arcgisXVariable');
+            const arcgisYSelect = document.getElementById('arcgisYVariable');
             
             fieldSection.style.display = 'block';
+            arcgisVariableSection.style.display = 'block';
             fieldCount.textContent = `Found ${currentFields.length} data fields`;
             
             // Clear previous options
             xSelect.innerHTML = '<option value="">-- Select X Variable --</option>';
             ySelect.innerHTML = '<option value="">-- Select Y Variable --</option>';
+            arcgisXSelect.innerHTML = '<option value="">-- Select X Variable --</option>';
+            arcgisYSelect.innerHTML = '<option value="">-- Select Y Variable --</option>';
             fieldList.innerHTML = '';
             
             // Add fields to selects and list
@@ -1359,6 +1396,17 @@
                     yOption.value = fieldName;
                     yOption.textContent = fieldAlias;
                     ySelect.appendChild(yOption);
+                    
+                    // Also add to ArcGIS dropdowns
+                    const arcgisXOption = document.createElement('option');
+                    arcgisXOption.value = fieldName;
+                    arcgisXOption.textContent = fieldAlias;
+                    arcgisXSelect.appendChild(arcgisXOption);
+                    
+                    const arcgisYOption = document.createElement('option');
+                    arcgisYOption.value = fieldName;
+                    arcgisYOption.textContent = fieldAlias;
+                    arcgisYSelect.appendChild(arcgisYOption);
                 }
                 
                 // Add to field list (skip problem fields)
@@ -1376,8 +1424,16 @@
 
         // Generate bivariate map
         async function generateBivariateMap() {
-            const xVar = document.getElementById('xVariable').value;
-            const yVar = document.getElementById('yVariable').value;
+            // Check both sets of dropdowns (Manual tab and ArcGIS tab)
+            let xVar = document.getElementById('xVariable').value;
+            let yVar = document.getElementById('yVariable').value;
+            
+            // If ArcGIS dropdowns have values, use those instead
+            const arcgisXVar = document.getElementById('arcgisXVariable').value;
+            const arcgisYVar = document.getElementById('arcgisYVariable').value;
+            
+            if (arcgisXVar) xVar = arcgisXVar;
+            if (arcgisYVar) yVar = arcgisYVar;
             
             if (!xVar || !yVar) {
                 showStatus('Please select both X and Y variables', 'error');
@@ -2057,6 +2113,7 @@
             
             // Hide sections
             document.getElementById('fieldSelection').style.display = 'none';
+            document.getElementById('arcgisVariableSelection').style.display = 'none';
             document.getElementById('legendSection').style.display = 'none';
             document.getElementById('statsSection').style.display = 'none';
             document.getElementById('exportSection').style.display = 'none';
