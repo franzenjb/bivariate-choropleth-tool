@@ -562,6 +562,82 @@
                             Generate Bivariate Map
                         </button>
                     </div>
+
+                    <!-- Example Analyses Accordion -->
+                    <div class="section" id="exampleAnalysesSection" style="display: none;">
+                        <div style="cursor: pointer; padding: 12px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px; font-size: 14px; font-weight: bold; color: #2e7d32;" onclick="toggleAccordion('exampleAnalysesAccordion')">
+                            <span>💡 10 Example Analyses - Click to Try</span>
+                            <span id="exampleAnalysesAccordion_arrow" style="float: right; transition: transform 0.2s;">▼</span>
+                        </div>
+                        <div id="exampleAnalysesAccordion" style="display: none; border: 1px solid #4caf50; border-top: none; background: white; padding: 15px; border-radius: 0 0 4px 4px; max-height: 400px; overflow-y: auto;">
+                            
+                            <h4 style="margin: 0 0 15px 0; color: #B71C1C;">🚨 Disaster Vulnerability Analyses</h4>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Seniors_65_up_Pop_2023_SUM', 'Med_HH_Inc_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>1. Age vs. Income Vulnerability</strong><br>
+                                <span style="font-size: 12px; color: #666;">Senior Population vs. Median Income - Identifies vulnerable elderly with limited resources</span>
+                            </div>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Pop_Den_2023', 'Total_HH_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>2. Density vs. Households</strong><br>
+                                <span style="font-size: 12px; color: #666;">Population Density vs. Total Households - Complex evacuation/shelter needs</span>
+                            </div>
+                            
+                            <h4 style="margin: 15px 0 10px 0; color: #B71C1C;">💰 Economic Resilience Patterns</h4>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Unemp_Rate_2023', 'Med_Home_Val_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>3. Unemployment vs. Home Values</strong><br>
+                                <span style="font-size: 12px; color: #666;">Economic stress vs. property values - Gentrification patterns</span>
+                            </div>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Diversity_Index_2023', 'Med_HH_Inc_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>4. Diversity vs. Income</strong><br>
+                                <span style="font-size: 12px; color: #666;">Community diversity vs. economic patterns</span>
+                            </div>
+                            
+                            <h4 style="margin: 15px 0 10px 0; color: #B71C1C;">🏠 Housing & Demographics</h4>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Youth_0_14_Pop_2023_SUM', 'Med_Home_Val_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>5. Youth Population vs. Home Values</strong><br>
+                                <span style="font-size: 12px; color: #666;">Family areas vs. housing affordability - Family evacuation planning</span>
+                            </div>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Total_HH_2023', 'Pop_Den_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>6. Households vs. Density</strong><br>
+                                <span style="font-size: 12px; color: #666;">Housing capacity vs. crowding - Shelter planning</span>
+                            </div>
+                            
+                            <h4 style="margin: 15px 0 10px 0; color: #B71C1C;">📈 Growth & Change Patterns</h4>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Pop_2023', 'Pop_2028')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>7. Current vs. Projected Population</strong><br>
+                                <span style="font-size: 12px; color: #666;">Growth areas needing expanded disaster services</span>
+                            </div>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Female_Pop_2023_SUM', 'Seniors_65_up_Pop_2023_SUM')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>8. Female vs. Senior Population</strong><br>
+                                <span style="font-size: 12px; color: #666;">Elderly women concentrations - Vulnerable populations</span>
+                            </div>
+                            
+                            <h4 style="margin: 15px 0 10px 0; color: #B71C1C;">🎯 Red Cross Strategic Planning</h4>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Hispanic_Pop_2023_SUM', 'Unemp_Pop_2023_SUM')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>9. Hispanic Population vs. Unemployment</strong><br>
+                                <span style="font-size: 12px; color: #666;">Language barriers + economic challenges - Service needs</span>
+                            </div>
+                            
+                            <div class="example-analysis" onclick="runExampleAnalysis('Adult_25_64_Pop_2023_SUM', 'Median_Age_2023')" style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; cursor: pointer;">
+                                <strong>10. Adult Population vs. Median Age</strong><br>
+                                <span style="font-size: 12px; color: #666;">Working-age patterns - Volunteer recruitment areas</span>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px;">
+                                <p style="font-size: 11px; color: #2e7d32; margin: 0;">
+                                    <strong>💡 Tip:</strong> Click any example above to automatically populate the X/Y variables, then click "Generate Bivariate Map" to see the analysis!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- CSV Upload Tab -->
@@ -852,6 +928,30 @@
                 setTimeout(() => {
                     panel.addEventListener('click', toggleDemoPanel);
                 }, 100);
+            }
+        }
+        
+        // Run example analysis - auto-populate X/Y variables
+        function runExampleAnalysis(xVariable, yVariable) {
+            // Set the ArcGIS dropdowns (these take priority in generateBivariateMap)
+            const arcgisXSelect = document.getElementById('arcgisXVariable');
+            const arcgisYSelect = document.getElementById('arcgisYVariable');
+            
+            // Try to set the values if the options exist
+            if (arcgisXSelect && arcgisYSelect) {
+                arcgisXSelect.value = xVariable;
+                arcgisYSelect.value = yVariable;
+                
+                // Show a quick feedback message
+                showStatus(`Selected: ${xVariable} vs ${yVariable} - Click "Generate Bivariate Map" to analyze!`, 'info');
+                
+                // Scroll to the Generate button for better UX
+                document.querySelector('button[onclick="generateBivariateMap()"]').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            } else {
+                showStatus('Please load geography data first (Counties, Divisions, etc.)', 'error');
             }
         }
         
@@ -1322,8 +1422,9 @@
             const arcgisXSelect = document.getElementById('arcgisXVariable');
             const arcgisYSelect = document.getElementById('arcgisYVariable');
             
-            // Only show the variable selection sections, not the redundant field list
+            // Show the variable selection and examples sections
             arcgisVariableSection.style.display = 'block';
+            document.getElementById('exampleAnalysesSection').style.display = 'block';
             // fieldSection.style.display = 'block';  // This is redundant - fields show in dropdowns
             fieldCount.textContent = `Found ${currentFields.length} data fields`;
             
@@ -2114,6 +2215,7 @@
             
             // Hide sections  
             document.getElementById('arcgisVariableSelection').style.display = 'none';
+            document.getElementById('exampleAnalysesSection').style.display = 'none';
             // No longer showing fieldSelection section - it's redundant
             document.getElementById('legendSection').style.display = 'none';
             document.getElementById('statsSection').style.display = 'none';
