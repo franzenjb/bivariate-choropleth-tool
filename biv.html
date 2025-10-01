@@ -2739,36 +2739,57 @@
 
         // Build enhanced popup for bivariate analysis
         function buildEnhancedPopup(props, xVar, yVar, xVal, yVal) {
-            const name = props.NAME || props.County || props.Chapter || props.Region || props.Division || 'Feature';
+            // Smart title generation - same logic as buildInitialPopup
+            let title;
+            if (props.County || (props.NAME && (props.State || props.STATE))) {
+                const countyName = props.NAME || props.County;
+                title = countyName.includes('County') ? countyName : `${countyName} County`;
+            } else {
+                title = props.NAME || props.Chapter || props.Region || props.Division || 'Feature';
+            }
+            
             const state = props.State || props.STATE || '';
             
             let html = `<div style="font-family: -apple-system, Arial, sans-serif; max-width: 350px;">`;
-            html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${name}</h3>`;
+            html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${title}</h3>`;
             
-            if (state) {
+            if (state && !title.includes(state)) {
                 html += `<div style="color: #666; font-size: 12px; margin-bottom: 10px;">${state}</div>`;
             }
             
-            // Bivariate values
+            // Bivariate values (primary focus for enhanced popup)
             html += `<div style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 10px; border-radius: 6px; margin: 10px 0;">`;
             html += `<strong style="color: #1976D2;">Bivariate Analysis:</strong><br>`;
             html += `<table style="width: 100%; margin-top: 5px;">`;
-            html += `<tr><td style="color: #666;">${xVar}:</td><td style="text-align: right;"><strong>${formatValue(xVal, xVar)}</strong></td></tr>`;
-            html += `<tr><td style="color: #666;">${yVar}:</td><td style="text-align: right;"><strong>${formatValue(yVal, yVar)}</strong></td></tr>`;
+            html += `<tr><td style="color: #666;">${xVar.replace(/_/g, ' ')}:</td><td style="text-align: right;"><strong>${formatValue(xVal, xVar)}</strong></td></tr>`;
+            html += `<tr><td style="color: #666;">${yVar.replace(/_/g, ' ')}:</td><td style="text-align: right;"><strong>${formatValue(yVal, yVar)}</strong></td></tr>`;
             html += `</table></div>`;
             
-            // Key demographics
-            const demographics = ['Pop_2023', 'Total_HH_2023', 'Med_HH_Inc_2023', 'Med_Home_Val_2023', 
-                                'Median_Age_2023', 'Diversity_Index_2023', 'Unemp_Rate_2023'];
+            // Key demographics (prioritized and logical order)
+            const priorityDemographics = [
+                'Pop_2023', 'Pop_2023_SUM', 
+                'Total_HH_2023', 'Total_HH_2023_SUM',
+                'Med_HH_Inc_2023', 'Med_HH_Inc_2023_WAVG',
+                'Median_Age_2023', 'Median_Age_2023_WAVG',
+                'Med_Home_Val_2023', 'Med_Home_Val_2023_WAVG',
+                'Diversity_Index_2023', 'Diversity_Index_2023_WAVG',
+                'Unemp_Rate_2023', 'Calculated_Unemp_Rate_2023'
+            ];
             
             let hasDemographics = false;
             let demoHtml = `<div style="margin-top: 10px;"><strong style="color: #666; font-size: 12px;">Key Demographics:</strong>`;
             demoHtml += `<table style="width: 100%; font-size: 12px; margin-top: 5px;">`;
             
-            demographics.forEach(field => {
+            priorityDemographics.forEach(field => {
                 if (props[field] && field !== xVar && field !== yVar) {
                     hasDemographics = true;
-                    const label = field.replace(/_/g, ' ').replace(/2023/g, '').trim();
+                    let label = field.replace(/_/g, ' ').replace(/2023/g, '').replace(/SUM/g, '').replace(/WAVG/g, '').trim();
+                    if (label === 'Pop') label = 'Population';
+                    if (label === 'Total HH') label = 'Households';
+                    if (label === 'Med HH Inc') label = 'Median Income';
+                    if (label === 'Med Home Val') label = 'Median Home Value';
+                    if (label === 'Unemp Rate' || label === 'Calculated Unemp Rate') label = 'Unemployment Rate';
+                    
                     demoHtml += `<tr><td style="color: #888; padding: 2px 0;">${label}:</td>`;
                     demoHtml += `<td style="text-align: right; padding: 2px 0;">${formatValue(props[field], field)}</td></tr>`;
                 }
@@ -2778,13 +2799,19 @@
                 html += demoHtml + `</table></div>`;
             }
             
-            // Geography hierarchy
-            if (props.Chapter || props.Region || props.Division) {
+            // Geography hierarchy (only if not redundant with title)
+            const geoFields = [];
+            if (props.Chapter && !title.includes(props.Chapter)) geoFields.push(`Chapter: ${props.Chapter}`);
+            if (props.Region && !title.includes(props.Region)) geoFields.push(`Region: ${props.Region}`);  
+            if (props.Division && !title.includes(props.Division)) geoFields.push(`Division: ${props.Division}`);
+            
+            if (geoFields.length > 0) {
                 html += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e0e0e0;">`;
                 html += `<strong style="color: #666; font-size: 12px;">ARC Geography:</strong><br>`;
-                if (props.Chapter) html += `<div style="font-size: 11px; color: #2196F3;">Chapter: ${props.Chapter}</div>`;
-                if (props.Region) html += `<div style="font-size: 11px; color: #9c27b0;">Region: ${props.Region}</div>`;
-                if (props.Division) html += `<div style="font-size: 11px; color: #4CAF50;">Division: ${props.Division}</div>`;
+                geoFields.forEach(field => {
+                    const color = field.includes('Chapter') ? '#2196F3' : field.includes('Region') ? '#9c27b0' : '#4CAF50';
+                    html += `<div style="font-size: 11px; color: ${color};">${field}</div>`;
+                });
                 html += `</div>`;
             }
             
@@ -2801,51 +2828,72 @@
         
         // Build initial popup for non-bivariate view
         function buildInitialPopup(props, serviceName) {
-            const name = props.NAME || props.County || props.Chapter || props.Region || props.Division || 'Feature';
+            // Smart title generation - add "County" for counties, avoid repetition for others
+            let title;
+            if (props.County || (props.NAME && serviceName && serviceName.toLowerCase().includes('county'))) {
+                const countyName = props.NAME || props.County;
+                title = countyName.includes('County') ? countyName : `${countyName} County`;
+            } else {
+                title = props.NAME || props.Chapter || props.Region || props.Division || 'Feature';
+            }
             
             let html = `<div style="font-family: -apple-system, Arial, sans-serif; max-width: 350px;">`;
-            html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${name}</h3>`;
+            html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${title}</h3>`;
             html += `<div style="color: #666; font-size: 11px; margin-bottom: 10px;">${serviceName}</div>`;
             
             html += `<table style="width: 100%; font-size: 12px; border-collapse: collapse;">`;
             
-            // 1. Region & Division (top priority)
-            if (props.Region) {
+            // 1. Major Demographics First (Population, Households, Income)
+            if (props.Pop_2023 || props.Pop_2023_SUM) {
+                const pop = props.Pop_2023 || props.Pop_2023_SUM;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Population 2023:</td><td style="padding: 3px 0; text-align: right;">${formatValue(pop, 'Pop_2023')}</td></tr>`;
+            }
+            
+            if (props.Total_HH_2023 || props.Total_HH_2023_SUM) {
+                const hh = props.Total_HH_2023 || props.Total_HH_2023_SUM;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Households:</td><td style="padding: 3px 0; text-align: right;">${formatValue(hh, 'Total_HH_2023')}</td></tr>`;
+            }
+            
+            if (props.Med_HH_Inc_2023 || props.Med_HH_Inc_2023_WAVG) {
+                const income = props.Med_HH_Inc_2023 || props.Med_HH_Inc_2023_WAVG;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Median Income:</td><td style="padding: 3px 0; text-align: right;">${formatValue(income, 'Med_HH_Inc_2023')}</td></tr>`;
+            }
+            
+            if (props.Median_Age_2023 || props.Median_Age_2023_WAVG) {
+                const age = props.Median_Age_2023 || props.Median_Age_2023_WAVG;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Median Age:</td><td style="padding: 3px 0; text-align: right;">${formatValue(age, 'Median_Age_2023')}</td></tr>`;
+            }
+            
+            // 2. Geography Context (only if not already in title)
+            if (props.Region && !title.includes(props.Region)) {
                 html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Region:</td><td style="padding: 3px 0; text-align: right;">${props.Region}</td></tr>`;
             }
-            if (props.Division) {
+            if (props.Division && !title.includes(props.Division)) {
                 html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Division:</td><td style="padding: 3px 0; text-align: right;">${props.Division}</td></tr>`;
             }
             
-            // 2. Population data (top priority)
-            if (props.Pop_2023 || props.Total_Pop_2023_SUM) {
-                const pop = props.Pop_2023 || props.Total_Pop_2023_SUM;
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Population:</td><td style="padding: 3px 0; text-align: right;">${formatValue(pop, 'Pop_2023')}</td></tr>`;
-            }
-            if (props.Pop_2028) {
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Population 2028:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Pop_2028, 'Pop_2028')}</td></tr>`;
+            // 3. State for counties
+            if (props.State && (props.County || serviceName.toLowerCase().includes('county'))) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">State:</td><td style="padding: 3px 0; text-align: right;">${props.State}</td></tr>`;
             }
             
-            // 3. Unemployment data
-            if (props.Unemp_Pop_2023_SUM) {
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Unemployed Pop:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Unemp_Pop_2023_SUM, 'Unemp_Pop_2023_SUM')}</td></tr>`;
-            }
-            if (props.Calculated_Unemp_Rate_2023) {
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Unemployment Rate:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Calculated_Unemp_Rate_2023, 'Calculated_Unemp_Rate_2023')}</td></tr>`;
+            // 4. Economic indicators (lower priority)
+            if (props.Unemp_Rate_2023 || props.Calculated_Unemp_Rate_2023) {
+                const rate = props.Calculated_Unemp_Rate_2023 || props.Unemp_Rate_2023;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Unemployment Rate:</td><td style="padding: 3px 0; text-align: right;">${formatValue(rate, 'Unemp_Rate_2023')}</td></tr>`;
             }
             
-            // 4. Headquarters info (cleaned up)
+            // 5. Administrative info (if relevant)
+            if (props.FEMA_Region) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">FEMA Region:</td><td style="padding: 3px 0; text-align: right;">${props.FEMA_Region}</td></tr>`;
+            }
+            
             if (props.Region_HQ_City && props.Region_HQ_State) {
                 let hqInfo = `${props.Region_HQ_City}, ${props.Region_HQ_State}`;
                 if (props.Region_HQ_Zip) {
                     hqInfo += ` ${props.Region_HQ_Zip}`;
                 }
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Region HQ:</td><td style="padding: 3px 0; text-align: right;">${hqInfo}</td></tr>`;
-            }
-            
-            // 5. FEMA Region (important for disaster planning)
-            if (props.FEMA_Region) {
-                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">FEMA Region:</td><td style="padding: 3px 0; text-align: right;">${props.FEMA_Region}</td></tr>`;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">HQ Location:</td><td style="padding: 3px 0; text-align: right;">${hqInfo}</td></tr>`;
             }
             
             html += `</table>`;
@@ -2899,15 +2947,15 @@
             
             setTimeout(() => {
                 if (document.getElementById('xVariable').options.length > 1) {
-                    showStatus('Step 2: Selecting Population vs Median Household Income for analysis...', 'info');
-                    selectDemoVariables('Pop', 'Med_HH_Inc');
+                    showStatus('Step 2: Selecting Population vs Per Capita Income for analysis...', 'info');
+                    selectSpecificVariables('Pop_2023_SUM', 'Per_Cap_Inc_2023_WAVG');
                     
                     setTimeout(() => {
                         showStatus('Step 3: Generating bivariate map...', 'info');
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('Division demo complete! Notice how the 7 divisions show different color patterns. Click any division for details!', 'success');
+                            showStatus('Division demo complete! Notice how the 7 divisions show different patterns for Population vs Income. Click any division for details!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2922,15 +2970,15 @@
             
             setTimeout(() => {
                 if (document.getElementById('xVariable').options.length > 1) {
-                    showStatus('Step 2: Selecting Population vs Median Income...', 'info');
-                    selectDemoVariables('Pop', 'Med_HH_Inc');
+                    showStatus('Step 2: Selecting Total Households vs Unemployed Population...', 'info');
+                    selectSpecificVariables('Total_HH_2023_SUM', 'Unemp_Pop_2023_SUM');
                     
                     setTimeout(() => {
                         showStatus('Step 3: Creating regional bivariate map...', 'info');
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('Region demo complete! 59 regions colored by population vs median income. Dark colors = high pop & high income!', 'success');
+                            showStatus('Region demo complete! 59 regions colored by Households vs Unemployment. Dark colors = high households & high unemployment!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2945,15 +2993,15 @@
             
             setTimeout(() => {
                 if (document.getElementById('xVariable').options.length > 1) {
-                    showStatus('Step 2: Selecting Total Households vs Diversity Index...', 'info');
-                    selectDemoVariables('Total_HH', 'Diversity');
+                    showStatus('Step 2: Selecting Population vs Employed Population...', 'info');
+                    selectSpecificVariables('Pop_2023_SUM', 'Emp_Pop_2023_SUM');
                     
                     setTimeout(() => {
                         showStatus('Step 3: Mapping chapter-level patterns...', 'info');
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('Chapter demo complete! Each of 250+ chapters colored by households vs unemployment. Zoom in to explore!', 'success');
+                            showStatus('Chapter demo complete! Each of 250+ chapters colored by Total Population vs Employed Population. Zoom in to explore!', 'success');
                         }, 2000);
                     }, 2000);
                 }
@@ -2970,71 +3018,15 @@
             
             setTimeout(() => {
                 if (document.getElementById('xVariable').options.length > 1) {
-                    showStatus('Step 2: Selecting Population vs Median Age...', 'info');
-                    
-                    const xSelect = document.getElementById('xVariable');
-                    const ySelect = document.getElementById('yVariable');
-                    
-                    // Look for specific meaningful fields
-                    let popFound = false;
-                    let incFound = false;
-                    
-                    // Find population field
-                    for (let i = 1; i < xSelect.options.length; i++) {
-                        const optText = xSelect.options[i].text.toLowerCase();
-                        const optValue = xSelect.options[i].value.toLowerCase();
-                        if ((optText.includes('pop') && optText.includes('2023')) || 
-                            optValue === 'pop_2023' || optValue === 'total_pop') {
-                            xSelect.selectedIndex = i;
-                            popFound = true;
-                            console.log('Selected X:', xSelect.options[i].text);
-                            break;
-                        }
-                    }
-                    
-                    // Find median household income
-                    for (let i = 1; i < ySelect.options.length; i++) {
-                        const optText = ySelect.options[i].text.toLowerCase();
-                        const optValue = ySelect.options[i].value.toLowerCase();
-                        if ((optText.includes('med') && optText.includes('inc')) || 
-                            optValue === 'med_hh_inc_2023' || optValue === 'median_hh_income') {
-                            ySelect.selectedIndex = i;
-                            incFound = true;
-                            console.log('Selected Y:', ySelect.options[i].text);
-                            break;
-                        }
-                    }
-                    
-                    // Fallback if specific fields not found
-                    if (!popFound) {
-                        // Just pick first numeric field that isn't area/acres
-                        for (let i = 1; i < xSelect.options.length; i++) {
-                            const text = xSelect.options[i].text.toLowerCase();
-                            if (!text.includes('acre') && !text.includes('area') && !text.includes('sqmi')) {
-                                xSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (!incFound) {
-                        // Pick a different field than X
-                        for (let i = 1; i < ySelect.options.length; i++) {
-                            const text = ySelect.options[i].text.toLowerCase();
-                            if (!text.includes('acre') && !text.includes('area') && !text.includes('sqmi') && 
-                                i !== xSelect.selectedIndex) {
-                                ySelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
+                    showStatus('Step 2: Selecting Population vs Median Household Income...', 'info');
+                    selectSpecificVariables('Pop_2023', 'Med_HH_Inc_2023');
                     
                     setTimeout(() => {
                         showStatus('Step 3: Creating detailed county map (please wait)...', 'info');
                         generateBivariateMap();
                         
                         setTimeout(() => {
-                            showStatus('County demo complete! All 3,142 counties colored by Population vs Income. Purple = populous & wealthy. Zoom to your area!', 'success');
+                            showStatus('County demo complete! All 3,142 counties colored by Population vs Median Income. Dark colors = high pop & high income!', 'success');
                         }, 3000);
                     }, 3000);
                 }
@@ -3153,6 +3145,28 @@
                     }, 2000);
                 }
             }, 10000);
+        }
+        
+        function selectSpecificVariables(xFieldName, yFieldName) {
+            const xSelect = document.getElementById('xVariable');
+            const ySelect = document.getElementById('yVariable');
+            
+            // Find exact field matches
+            for (let i = 0; i < xSelect.options.length; i++) {
+                if (xSelect.options[i].value === xFieldName) {
+                    xSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            for (let i = 0; i < ySelect.options.length; i++) {
+                if (ySelect.options[i].value === yFieldName) {
+                    ySelect.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            console.log(`Demo selected: X=${xFieldName}, Y=${yFieldName}`);
         }
         
         function selectDemoVariables(xKeyword, yKeyword) {
