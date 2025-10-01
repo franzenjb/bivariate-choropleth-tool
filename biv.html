@@ -2804,23 +2804,56 @@
             html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${name}</h3>`;
             html += `<div style="color: #666; font-size: 11px; margin-bottom: 10px;">${serviceName}</div>`;
             
-            // Organize fields by user priority - focus on essential demographics only
-            const fieldCategories = {
-                // Location (simplified - no codes)
-                'location': ['State', 'County', 'Chapter', 'Region', 'Division'],
-                // Age demographics 
-                'age': ['Adult_Pop_2023_SUM', 'Youth_Pop_2023_SUM', 'Senior_Pop_2023_SUM', 'Median_Age_2023'],
-                // Race/ethnicity demographics
-                'race': ['Black_Pop_2023_SUM', 'White_Pop_2023_SUM', 'Hispanic_Pop_2023_SUM'],
-                // Employment
-                'employment': ['Calculated_Unemp_Rate_2023', 'Unemp_Pop_2023_SUM'],
-                // Essential stats only
-                'essential': ['Total_Pop_2023_SUM', 'Med_HH_Inc_2023']
-            };
-            
             html += `<table style="width: 100%; font-size: 12px; border-collapse: collapse;">`;
-            let fieldCount = 0;
-            let rowIndex = 0;
+            
+            // 1. Region & Division (top priority)
+            if (props.Region) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Region:</td><td style="padding: 3px 0; text-align: right;">${props.Region}</td></tr>`;
+            }
+            if (props.Division) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Division:</td><td style="padding: 3px 0; text-align: right;">${props.Division}</td></tr>`;
+            }
+            
+            // 2. Population data (top priority)
+            if (props.Pop_2023 || props.Total_Pop_2023_SUM) {
+                const pop = props.Pop_2023 || props.Total_Pop_2023_SUM;
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Population:</td><td style="padding: 3px 0; text-align: right;">${formatValue(pop, 'Pop_2023')}</td></tr>`;
+            }
+            if (props.Pop_2028) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Population 2028:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Pop_2028, 'Pop_2028')}</td></tr>`;
+            }
+            
+            // 3. Unemployment data
+            if (props.Unemp_Pop_2023_SUM) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Unemployed Pop:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Unemp_Pop_2023_SUM, 'Unemp_Pop_2023_SUM')}</td></tr>`;
+            }
+            if (props.Calculated_Unemp_Rate_2023) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Unemployment Rate:</td><td style="padding: 3px 0; text-align: right;">${formatValue(props.Calculated_Unemp_Rate_2023, 'Calculated_Unemp_Rate_2023')}</td></tr>`;
+            }
+            
+            // 4. Headquarters info (cleaned up)
+            if (props.Region_HQ_City && props.Region_HQ_State) {
+                let hqInfo = `${props.Region_HQ_City}, ${props.Region_HQ_State}`;
+                if (props.Region_HQ_Zip) {
+                    hqInfo += ` ${props.Region_HQ_Zip}`;
+                }
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">Region HQ:</td><td style="padding: 3px 0; text-align: right;">${hqInfo}</td></tr>`;
+            }
+            
+            // 5. FEMA Region (important for disaster planning)
+            if (props.FEMA_Region) {
+                html += `<tr><td style="padding: 3px 0; color: #666; font-weight: bold;">FEMA Region:</td><td style="padding: 3px 0; text-align: right;">${props.FEMA_Region}</td></tr>`;
+            }
+            
+            html += `</table>`;
+            
+            // Add accordion for all fields
+            html += buildFieldAccordion(props);
+            
+            html += `</div>`;
+            
+            return html;
+        }
             
             // Process each category in order
             Object.keys(fieldCategories).forEach(category => {
