@@ -1009,7 +1009,20 @@
         
         // Fit bounds intelligently - show all data but zoom to continental US initially
         function fitBoundsSmartly(layer) {
-            const bounds = layer.getBounds();
+            let bounds;
+            try {
+                bounds = layer.getBounds();
+                // Validate bounds object
+                if (!bounds || typeof bounds.isValid !== 'function' || !bounds.isValid()) {
+                    console.warn('Invalid bounds from layer, using default US view');
+                    map.setView([39.8283, -98.5795], 4);
+                    return;
+                }
+            } catch (error) {
+                console.warn('Error getting bounds from layer:', error);
+                map.setView([39.8283, -98.5795], 4);
+                return;
+            }
             
             // Continental US bounds (main viewing area)
             const continentalBounds = L.latLngBounds(
@@ -1071,16 +1084,16 @@
                 );
                 map.fitBounds(expandedBounds, { padding: [20, 20] });
             } else {
-                // Significant data outside - fit all data but max out at extended US
-                if (bounds && bounds.isValid && bounds.isValid()) {
-                    const usConstrainedBounds = bounds.intersect(extendedUSBounds);
-                    if (usConstrainedBounds && usConstrainedBounds.isValid()) {
-                        map.fitBounds(usConstrainedBounds, { padding: [20, 20] });
-                    } else {
+                // Significant data outside - just fit to the actual data bounds
+                try {
+                    if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
                         map.fitBounds(bounds, { padding: [20, 20] });
+                    } else {
+                        // Fallback to extended US bounds if no valid bounds
+                        map.fitBounds(extendedUSBounds, { padding: [20, 20] });
                     }
-                } else {
-                    // Fallback to extended US bounds if no valid bounds
+                } catch (error) {
+                    console.warn('Bounds fitting failed, using extended US bounds:', error);
                     map.fitBounds(extendedUSBounds, { padding: [20, 20] });
                 }
             }
