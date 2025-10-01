@@ -2856,48 +2856,6 @@
             
             return html;
         }
-            
-            // Process each category in order
-            Object.keys(fieldCategories).forEach(category => {
-                fieldCategories[category].forEach(field => {
-                    // Skip problematic fields and technical metadata users don't need
-                    const isProblemField = ((field.toLowerCase().includes('unemp') && field.includes('WAVG')) ||
-                                         field === 'Unemp_Rate_2023_WAVG' ||
-                                         field === 'Unemp_Rate_2023_CALC' ||
-                                         field === 'Avg_Home_Val_2023_WAVG' ||
-                                         field.toLowerCase().includes('avg_') ||
-                                         field.toLowerCase().includes('average') ||
-                                         (field.includes('WAVG') && field.toLowerCase().includes('val')) ||
-                                         (field.includes('CALC') && field.toLowerCase().includes('rate')) ||
-                                         // Technical geographic fields users don't need
-                                         field.toLowerCase().includes('shape') ||
-                                         field.toLowerCase().includes('area') ||
-                                         field.toLowerCase().includes('length') ||
-                                         field.toLowerCase().includes('acres') ||
-                                         field.toLowerCase().includes('sqmi') ||
-                                         field.toLowerCase().includes('sq_mi') ||
-                                         // Division codes and technical IDs
-                                         field.toLowerCase().includes('div_code') ||
-                                         field.toLowerCase().includes('division_code')) &&
-                                         field !== 'Calculated_Unemp_Rate_2023';
-                                         
-                    if (props[field] && fieldCount < 12 && !isProblemField) {
-                        const bgColor = rowIndex % 2 === 0 ? '#f8f9fa' : '#ffffff';
-                        const label = field.replace(/_/g, ' ').replace(/2023/g, '').replace(/SUM/g, '').trim();
-                        
-                        html += `<tr style="background-color: ${bgColor};">`;
-                        html += `<td style="color: #666; padding: 6px 8px; border: none;">${label}:</td>`;
-                        html += `<td style="text-align: right; padding: 6px 8px; border: none;"><strong>${formatValue(props[field], field)}</strong></td>`;
-                        html += `</tr>`;
-                        fieldCount++;
-                        rowIndex++;
-                    }
-                });
-            });
-            
-            // Add any other interesting fields not already shown
-            const allPriorityFields = Object.values(fieldCategories).flat();
-        
         // Quick demo function with different types
         async function quickDemo(demoType) {
             showStatus(`Starting ${demoType} demo... Watch me load data and create a map!`, 'info');
