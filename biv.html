@@ -462,31 +462,6 @@
 
                 <!-- ArcGIS Tab -->
                 <div id="arcgis-tab" class="tab-content active">
-                    <!-- X/Y Variable Selection - Top Priority -->
-                    <div class="section" id="arcgisVariableSelection" style="display: none;">
-                        <h3>📊 Create Bivariate Map</h3>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label>X-Axis Variable:</label>
-                            <select id="arcgisXVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
-                                <option value="">-- Select X Variable --</option>
-                            </select>
-                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 This dropdown will show ALL demographic fields (income, population, age, etc.) after you load geography data below</div>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label>Y-Axis Variable:</label>
-                            <select id="arcgisYVariable" title="Choose your second variable to compare against the X variable">
-                                <option value="">-- Select Y Variable --</option>
-                            </select>
-                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
-                        </div>
-                        
-                        <button onclick="generateBivariateMap()" style="width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">
-                            Generate Bivariate Map
-                        </button>
-                    </div>
-
                     <div class="section">
                         <h3>Quick Connect
                             <button onclick="resetArcGISTab()" style="float: right; background: #666; padding: 6px 12px; font-size: 12px;">Reset</button>
@@ -531,6 +506,31 @@
                             <div class="help-text" style="font-size: 12px; color: #666;">50 US states</div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- X/Y Variable Selection - Appears After Geography Selection -->
+                    <div class="section" id="arcgisVariableSelection" style="display: none;">
+                        <h3>📊 Create Bivariate Map</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>X-Axis Variable:</label>
+                            <select id="arcgisXVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
+                                <option value="">-- Select X Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 Choose your first variable from the loaded demographic fields</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>Y-Axis Variable:</label>
+                            <select id="arcgisYVariable" title="Choose your second variable to compare against the X variable">
+                                <option value="">-- Select Y Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
+                        </div>
+                        
+                        <button onclick="generateBivariateMap()" style="width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">
+                            Generate Bivariate Map
+                        </button>
                     </div>
 
                     <!-- Custom Service Accordion -->
