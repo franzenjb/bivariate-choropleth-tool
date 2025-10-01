@@ -2532,13 +2532,26 @@
                     html += `<div style="font-weight: bold; font-size: 11px; color: #B71C1C; margin-bottom: 5px;">${categoryName} (${fields.length})</div>`;
                     html += `<table style="width: 100%; font-size: 10px;">`;
                     
-                    fields.forEach(field => {
-                        const label = field.key.replace(/_/g, ' ').replace(/2023/g, '').trim();
-                        html += `<tr style="border-bottom: 1px solid #f8f9fa;">`;
-                        html += `<td style="padding: 2px 5px 2px 0; color: #666; width: 60%;">${label}:</td>`;
-                        html += `<td style="padding: 2px 0; text-align: right; font-weight: bold;">${formatValue(field.value, field.key)}</td>`;
-                        html += `</tr>`;
-                    });
+                    // Group fields into sets of 5 for better readability
+                    for (let i = 0; i < fields.length; i += 5) {
+                        const fieldGroup = fields.slice(i, i + 5);
+                        
+                        // Add subtle divider between groups (except for first group)
+                        if (i > 0) {
+                            html += `<tr><td colspan="2" style="height: 8px; border-bottom: 1px solid #e9ecef;"></td></tr>`;
+                        }
+                        
+                        fieldGroup.forEach((field, index) => {
+                            const label = field.key.replace(/_/g, ' ').replace(/2023/g, '').trim();
+                            const isEven = index % 2 === 0;
+                            const bgColor = isEven ? '#f8f9fa' : '#ffffff';
+                            
+                            html += `<tr style="background: ${bgColor};">`;
+                            html += `<td style="padding: 4px 8px 4px 6px; color: #666; width: 60%;">${label}:</td>`;
+                            html += `<td style="padding: 4px 6px; text-align: right; font-weight: bold;">${formatValue(field.value, field.key)}</td>`;
+                            html += `</tr>`;
+                        });
+                    }
                     
                     html += `</table></div>`;
                 }
