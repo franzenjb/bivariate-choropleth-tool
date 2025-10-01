@@ -965,6 +965,37 @@
                     }
                 }
                 
+                // Add calculated unemployment rate if we have both unemployment population and total population
+                const hasUnempPop = currentFields.some(f => f.name && f.name.match(/Unemp.*Pop.*SUM/i));
+                const hasTotalPop = currentFields.some(f => f.name && f.name.match(/Total.*Pop.*SUM/i));
+                
+                if (hasUnempPop && hasTotalPop) {
+                    const unempField = currentFields.find(f => f.name && f.name.match(/Unemp.*Pop.*SUM/i));
+                    const totalField = currentFields.find(f => f.name && f.name.match(/Total.*Pop.*SUM/i));
+                    
+                    if (unempField && totalField) {
+                        console.log(`✅ Adding calculated unemployment rate from ${unempField.name} / ${totalField.name}`);
+                        
+                        // Add calculated rate to each feature
+                        currentData.forEach(feature => {
+                            const unempPop = feature.properties[unempField.name];
+                            const totalPop = feature.properties[totalField.name];
+                            if (unempPop !== null && totalPop !== null && totalPop > 0) {
+                                feature.properties['Calculated_Unemp_Rate_2023'] = (unempPop / totalPop) * 100;
+                            } else {
+                                feature.properties['Calculated_Unemp_Rate_2023'] = null;
+                            }
+                        });
+                        
+                        // Add to fields list
+                        currentFields.push({
+                            name: 'Calculated_Unemp_Rate_2023',
+                            alias: 'Calculated Unemployment Rate 2023 (%)',
+                            type: 'esriFieldTypeDouble'
+                        });
+                    }
+                }
+                
                 // Display fields
                 displayFields();
                 
@@ -1172,6 +1203,9 @@
                         layer.bindPopup(popupContent, { maxWidth: 400 });
                     }
                 }).addTo(map);
+                
+                // Auto-zoom to data extent using smart bounds
+                fitBoundsSmartly(currentLayer);
                 
                 // Update legend
                 updateLegend(xVar, yVar);
@@ -1940,43 +1974,43 @@
             switch(type) {
                 case 'divisions':
                     sampleData = [
-                        { Division: 'Pacific Division', Metric1: 85, Metric2: 92, TestValue: 156 },
-                        { Division: 'Western Division', Metric1: 78, Metric2: 88, TestValue: 134 },
-                        { Division: 'Central Division', Metric1: 82, Metric2: 85, TestValue: 145 },
-                        { Division: 'Eastern Division', Metric1: 91, Metric2: 79, TestValue: 167 },
-                        { Division: 'Northern Division', Metric1: 73, Metric2: 94, TestValue: 128 },
-                        { Division: 'Southern Division', Metric1: 88, Metric2: 82, TestValue: 152 },
-                        { Division: 'Northeastern Division', Metric1: 95, Metric2: 87, TestValue: 173 }
+                        { Division: 'Pacific Division', Total_Pop_2023: 15420000, Med_HH_Inc_2023: 78900, Diversity_Index: 0.82 },
+                        { Division: 'Western Division', Total_Pop_2023: 8930000, Med_HH_Inc_2023: 65400, Diversity_Index: 0.68 },
+                        { Division: 'Central Division', Total_Pop_2023: 12750000, Med_HH_Inc_2023: 59200, Diversity_Index: 0.71 },
+                        { Division: 'Eastern Division', Total_Pop_2023: 18650000, Med_HH_Inc_2023: 72100, Diversity_Index: 0.75 },
+                        { Division: 'Northern Division', Total_Pop_2023: 6780000, Med_HH_Inc_2023: 56800, Diversity_Index: 0.63 },
+                        { Division: 'Southern Division', Total_Pop_2023: 14320000, Med_HH_Inc_2023: 53900, Diversity_Index: 0.69 },
+                        { Division: 'Northeastern Division', Total_Pop_2023: 21450000, Med_HH_Inc_2023: 81200, Diversity_Index: 0.79 }
                     ];
                     break;
                     
                 case 'counties':
                     sampleData = [
-                        { FIPS: '06037', County: 'Los Angeles', State: 'California', TestRate: 45.2, TestCount: 5234 },
-                        { FIPS: '17031', County: 'Cook', State: 'Illinois', TestRate: 52.1, TestCount: 4821 },
-                        { FIPS: '48201', County: 'Harris', State: 'Texas', TestRate: 38.7, TestCount: 3956 },
-                        { FIPS: '04013', County: 'Maricopa', State: 'Arizona', TestRate: 41.3, TestCount: 3421 },
-                        { FIPS: '06073', County: 'San Diego', State: 'California', TestRate: 48.9, TestCount: 2987 },
-                        { FIPS: '06059', County: 'Orange', State: 'California', TestRate: 50.2, TestCount: 2765 },
-                        { FIPS: '12086', County: 'Miami-Dade', State: 'Florida', TestRate: 55.8, TestCount: 2543 },
-                        { FIPS: '36047', County: 'Kings', State: 'New York', TestRate: 61.2, TestCount: 2234 },
-                        { FIPS: '48113', County: 'Dallas', State: 'Texas', TestRate: 43.5, TestCount: 2156 },
-                        { FIPS: '06065', County: 'Riverside', State: 'California', TestRate: 39.8, TestCount: 1987 }
+                        { FIPS: '06037', County: 'Los Angeles', State: 'California', Total_Pop_2023: 9721138, Med_HH_Inc_2023: 70372, Pov_Rate_2023: 14.2 },
+                        { FIPS: '17031', County: 'Cook', State: 'Illinois', Total_Pop_2023: 5140675, Med_HH_Inc_2023: 65781, Pov_Rate_2023: 16.8 },
+                        { FIPS: '48201', County: 'Harris', State: 'Texas', Total_Pop_2023: 4835570, Med_HH_Inc_2023: 62982, Pov_Rate_2023: 15.1 },
+                        { FIPS: '04013', County: 'Maricopa', State: 'Arizona', Total_Pop_2023: 4420568, Med_HH_Inc_2023: 68917, Pov_Rate_2023: 12.9 },
+                        { FIPS: '06073', County: 'San Diego', State: 'California', Total_Pop_2023: 3286069, Med_HH_Inc_2023: 84454, Pov_Rate_2023: 10.8 },
+                        { FIPS: '06059', County: 'Orange', State: 'California', Total_Pop_2023: 3167809, Med_HH_Inc_2023: 95198, Pov_Rate_2023: 8.9 },
+                        { FIPS: '12086', County: 'Miami-Dade', State: 'Florida', Total_Pop_2023: 2665874, Med_HH_Inc_2023: 51347, Pov_Rate_2023: 18.7 },
+                        { FIPS: '36047', County: 'Kings', State: 'New York', Total_Pop_2023: 2590516, Med_HH_Inc_2023: 59227, Pov_Rate_2023: 19.5 },
+                        { FIPS: '48113', County: 'Dallas', State: 'Texas', Total_Pop_2023: 2552213, Med_HH_Inc_2023: 67534, Pov_Rate_2023: 13.4 },
+                        { FIPS: '06065', County: 'Riverside', State: 'California', Total_Pop_2023: 2458395, Med_HH_Inc_2023: 74582, Pov_Rate_2023: 11.6 }
                     ];
                     break;
                     
                 case 'regions':
                     sampleData = [
-                        { Region: 'California', Performance: 88, Coverage: 92, Score: 180 },
-                        { Region: 'Texas Gulf', Performance: 76, Coverage: 85, Score: 161 },
-                        { Region: 'Greater New York', Performance: 92, Coverage: 88, Score: 180 },
-                        { Region: 'Illinois', Performance: 83, Coverage: 79, Score: 162 },
-                        { Region: 'Ohio', Performance: 71, Coverage: 82, Score: 153 },
-                        { Region: 'Pennsylvania', Performance: 79, Coverage: 86, Score: 165 },
-                        { Region: 'Michigan', Performance: 74, Coverage: 78, Score: 152 },
-                        { Region: 'North Florida', Performance: 68, Coverage: 91, Score: 159 },
-                        { Region: 'Central Florida', Performance: 85, Coverage: 83, Score: 168 },
-                        { Region: 'South Florida', Performance: 90, Coverage: 87, Score: 177 }
+                        { Region: 'California', Total_Pop_2023: 39029342, Med_Age_2023: 36.8, College_Grad_Rate: 33.9 },
+                        { Region: 'Texas Gulf', Total_Pop_2023: 8934259, Med_Age_2023: 34.2, College_Grad_Rate: 29.1 },
+                        { Region: 'Greater New York', Total_Pop_2023: 20201249, Med_Age_2023: 38.9, College_Grad_Rate: 38.7 },
+                        { Region: 'Illinois', Total_Pop_2023: 12620571, Med_Age_2023: 37.5, College_Grad_Rate: 34.2 },
+                        { Region: 'Ohio', Total_Pop_2023: 11780017, Med_Age_2023: 39.3, College_Grad_Rate: 28.4 },
+                        { Region: 'Pennsylvania', Total_Pop_2023: 13002700, Med_Age_2023: 40.8, College_Grad_Rate: 31.8 },
+                        { Region: 'Michigan', Total_Pop_2023: 10037261, Med_Age_2023: 39.7, College_Grad_Rate: 29.5 },
+                        { Region: 'North Florida', Total_Pop_2023: 6834759, Med_Age_2023: 42.1, College_Grad_Rate: 32.6 },
+                        { Region: 'Central Florida', Total_Pop_2023: 7982341, Med_Age_2023: 40.3, College_Grad_Rate: 30.2 },
+                        { Region: 'South Florida', Total_Pop_2023: 9145829, Med_Age_2023: 43.5, College_Grad_Rate: 35.8 }
                     ];
                     break;
             }
@@ -2095,31 +2129,97 @@
             html += `<h3 style="color: #B71C1C; margin: 0 0 8px 0; font-size: 16px;">${name}</h3>`;
             html += `<div style="color: #666; font-size: 11px; margin-bottom: 10px;">${serviceName}</div>`;
             
-            // Show top 10 meaningful fields
-            const priorityFields = ['State', 'County', 'Chapter', 'Region', 'Division', 'FIPS', 
-                                  'Pop_2023', 'Total_HH_2023', 'Med_HH_Inc_2023', 'Med_Home_Val_2023',
-                                  'Median_Age_2023', 'Diversity_Index_2023', 'Unemp_Rate_2023'];
+            // Organize fields by user priority - focus on essential demographics only
+            const fieldCategories = {
+                // Location (simplified - no codes)
+                'location': ['State', 'County', 'Chapter', 'Region', 'Division'],
+                // Age demographics 
+                'age': ['Adult_Pop_2023_SUM', 'Youth_Pop_2023_SUM', 'Senior_Pop_2023_SUM', 'Median_Age_2023'],
+                // Race/ethnicity demographics
+                'race': ['Black_Pop_2023_SUM', 'White_Pop_2023_SUM', 'Hispanic_Pop_2023_SUM'],
+                // Employment
+                'employment': ['Calculated_Unemp_Rate_2023', 'Unemp_Pop_2023_SUM'],
+                // Essential stats only
+                'essential': ['Total_Pop_2023_SUM', 'Med_HH_Inc_2023']
+            };
             
-            html += `<table style="width: 100%; font-size: 12px;">`;
+            html += `<table style="width: 100%; font-size: 12px; border-collapse: collapse;">`;
             let fieldCount = 0;
+            let rowIndex = 0;
             
-            priorityFields.forEach(field => {
-                if (props[field] && fieldCount < 10) {
-                    const label = field.replace(/_/g, ' ').replace(/2023/g, '').trim();
-                    html += `<tr><td style="color: #666; padding: 3px 0;">${label}:</td>`;
-                    html += `<td style="text-align: right; padding: 3px 0;"><strong>${formatValue(props[field], field)}</strong></td></tr>`;
-                    fieldCount++;
-                }
+            // Process each category in order
+            Object.keys(fieldCategories).forEach(category => {
+                fieldCategories[category].forEach(field => {
+                    // Skip problematic fields and technical metadata users don't need
+                    const isProblemField = ((field.toLowerCase().includes('unemp') && field.includes('WAVG')) ||
+                                         field === 'Unemp_Rate_2023_WAVG' ||
+                                         field === 'Unemp_Rate_2023_CALC' ||
+                                         field === 'Avg_Home_Val_2023_WAVG' ||
+                                         field.toLowerCase().includes('avg_') ||
+                                         field.toLowerCase().includes('average') ||
+                                         (field.includes('WAVG') && field.toLowerCase().includes('val')) ||
+                                         (field.includes('CALC') && field.toLowerCase().includes('rate')) ||
+                                         // Technical geographic fields users don't need
+                                         field.toLowerCase().includes('shape') ||
+                                         field.toLowerCase().includes('area') ||
+                                         field.toLowerCase().includes('length') ||
+                                         field.toLowerCase().includes('acres') ||
+                                         field.toLowerCase().includes('sqmi') ||
+                                         field.toLowerCase().includes('sq_mi') ||
+                                         // Division codes and technical IDs
+                                         field.toLowerCase().includes('div_code') ||
+                                         field.toLowerCase().includes('division_code')) &&
+                                         field !== 'Calculated_Unemp_Rate_2023';
+                                         
+                    if (props[field] && fieldCount < 12 && !isProblemField) {
+                        const bgColor = rowIndex % 2 === 0 ? '#f8f9fa' : '#ffffff';
+                        const label = field.replace(/_/g, ' ').replace(/2023/g, '').replace(/SUM/g, '').trim();
+                        
+                        html += `<tr style="background-color: ${bgColor};">`;
+                        html += `<td style="color: #666; padding: 6px 8px; border: none;">${label}:</td>`;
+                        html += `<td style="text-align: right; padding: 6px 8px; border: none;"><strong>${formatValue(props[field], field)}</strong></td>`;
+                        html += `</tr>`;
+                        fieldCount++;
+                        rowIndex++;
+                    }
+                });
             });
             
-            // Add any other interesting fields
+            // Add any other interesting fields not already shown
+            const allPriorityFields = Object.values(fieldCategories).flat();
             for (let key in props) {
-                if (fieldCount < 12 && !priorityFields.includes(key) && props[key] && 
-                    key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID') {
-                    const label = key.replace(/_/g, ' ');
-                    html += `<tr><td style="color: #888; padding: 3px 0; font-size: 11px;">${label}:</td>`;
-                    html += `<td style="text-align: right; padding: 3px 0; font-size: 11px;">${formatValue(props[key], key)}</td></tr>`;
+                // Skip problematic fields and technical metadata users don't need
+                const isProblemField = ((key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
+                                     key === 'Unemp_Rate_2023_WAVG' ||
+                                     key === 'Unemp_Rate_2023_CALC' ||
+                                     key === 'Avg_Home_Val_2023_WAVG' ||
+                                     key.toLowerCase().includes('avg_') ||
+                                     key.toLowerCase().includes('average') ||
+                                     (key.includes('WAVG') && key.toLowerCase().includes('val')) ||
+                                     (key.includes('CALC') && key.toLowerCase().includes('rate')) ||
+                                     // Technical geographic fields users don't need
+                                     key.toLowerCase().includes('shape') ||
+                                     key.toLowerCase().includes('area') ||
+                                     key.toLowerCase().includes('length') ||
+                                     key.toLowerCase().includes('acres') ||
+                                     key.toLowerCase().includes('sqmi') ||
+                                     key.toLowerCase().includes('sq_mi') ||
+                                     // Division codes and technical IDs
+                                     key.toLowerCase().includes('div_code') ||
+                                     key.toLowerCase().includes('division_code')) &&
+                                     key !== 'Calculated_Unemp_Rate_2023';
+                                     
+                if (fieldCount < 15 && !allPriorityFields.includes(key) && props[key] && 
+                    key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID' && !isProblemField) {
+                    const bgColor = rowIndex % 2 === 0 ? '#f8f9fa' : '#ffffff';
+                    const label = key.replace(/_/g, ' ').replace(/2023/g, '').replace(/SUM/g, '').trim();
+                    
+                    html += `<tr style="background-color: ${bgColor};">`;
+                    html += `<td style="color: #888; padding: 6px 8px; border: none; font-size: 11px;">${label}:</td>`;
+                    html += `<td style="text-align: right; padding: 6px 8px; border: none; font-size: 11px;">${formatValue(props[key], key)}</td>`;
+                    html += `</tr>`;
                     fieldCount++;
+                    rowIndex++;
                 }
             }
             
@@ -2132,35 +2232,115 @@
         }
         
         // Format values for display
+        function formatLargeNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            } else {
+                return num.toString();
+            }
+        }
+
         function formatValue(value, fieldName) {
-            // Handle various falsy values but allow 0
-            if (value === null || value === undefined || value === '') return 'N/A';
-            if (value === 0) return '0';  // Explicitly handle zero values
+            // Handle various null/missing value representations
+            if (value === null || value === undefined || value === '' || 
+                value === 'NULL' || value === 'null' || value === 'N/A' || 
+                value === 'n/a' || value === '#N/A' || value === '-999' || value === '-9999') {
+                return 'No Data';
+            }
             
-            const name = (fieldName || '').toLowerCase();
-            
-            // Format currency
-            if (name.includes('income') || name.includes('inc') || name.includes('val') || name.includes('wage')) {
-                if (typeof value === 'number') {
-                    return '$' + value.toLocaleString();
+            // Handle string numbers with commas and currency symbols (e.g., "$1,234,567")
+            let cleanValue = value;
+            if (typeof value === 'string') {
+                cleanValue = value.replace(/[$,]/g, '').trim();  // Remove $ and commas
+                // Check for other missing data indicators
+                if (cleanValue === '' || cleanValue.toLowerCase() === 'null' || 
+                    cleanValue.toLowerCase() === 'n/a' || cleanValue === '0.00' && fieldName.toLowerCase().includes('val')) {
+                    return 'No Data';
                 }
             }
             
-            // Format percentages
-            if (name.includes('rate') || name.includes('percent') || name.includes('pct')) {
-                if (typeof value === 'number') {
-                    return value.toFixed(1) + '%';
+            const num = parseFloat(cleanValue);
+            if (isNaN(num)) {
+                // If it's not a number, return as-is but warn for debugging
+                if (fieldName && (fieldName.toLowerCase().includes('rate') || 
+                                 fieldName.toLowerCase().includes('income') ||
+                                 fieldName.toLowerCase().includes('pop') ||
+                                 fieldName.toLowerCase().includes('val'))) {
+                    console.warn(`Non-numeric value for numeric field ${fieldName}:`, value);
+                }
+                return value;
+            }
+            
+            // Handle percentage fields (unemployment rates, etc.)
+            if (fieldName && (fieldName.toLowerCase().includes('rate') || 
+                             fieldName.toLowerCase().includes('percent') ||
+                             fieldName.toLowerCase().includes('pct'))) {
+                
+                if (fieldName.toLowerCase().includes('unemp')) {
+                    // Unemployment rates: reasonable range is 0-30%
+                    if (num >= 0 && num <= 30) {
+                        return num.toFixed(1) + '%';
+                    } else if (num > 30 && num <= 100) {
+                        // Suspiciously high - likely data quality issue
+                        console.warn(`Suspicious unemployment rate: ${num}% for field ${fieldName} - this may indicate data quality issues in the ArcGIS source`);
+                        return num.toFixed(1) + '% (Suspect Data)';
+                    } else {
+                        console.warn(`Unrealistic unemployment rate: ${num}% for field ${fieldName} - this is likely a data error`);
+                        return 'Data Error';
+                    }
+                } else {
+                    // Other rate fields - assume they're already percentages
+                    if (num >= 0 && num <= 100) {
+                        return num.toFixed(1) + '%';
+                    } else if (num > 100) {
+                        console.warn(`Suspicious percentage value: ${num} for field ${fieldName}`);
+                        return num.toFixed(1) + '% (Check Data)';
+                    } else {
+                        return num.toFixed(1) + '%';
+                    }
                 }
             }
             
-            // Format large numbers with commas
-            if (typeof value === 'number') {
-                if (value > 999) {
-                    return value.toLocaleString();
+            // Handle income/currency fields
+            if (fieldName && (fieldName.toLowerCase().includes('income') || 
+                             fieldName.toLowerCase().includes('val') ||
+                             fieldName.toLowerCase().includes('wage'))) {
+                // Don't show $0 for home values - likely missing data
+                if (num === 0 && fieldName.toLowerCase().includes('val')) {
+                    return 'No Data';
                 }
-                if (value % 1 !== 0) {
-                    return value.toFixed(2);
+                return '$' + formatLargeNumber(num);
+            }
+            
+            // Handle population/count fields
+            if (fieldName && (fieldName.toLowerCase().includes('pop') || 
+                             fieldName.toLowerCase().includes('hh') ||
+                             fieldName.toLowerCase().includes('total'))) {
+                return formatLargeNumber(num);
+            }
+            
+            // Handle zip codes - always format as 5 digits with leading zeros for New England
+            if (fieldName && (fieldName.toLowerCase().includes('zip') || 
+                             fieldName.toLowerCase().includes('postal'))) {
+                if (num >= 1 && num <= 99999) {
+                    return num.toString().padStart(5, '0'); // Add leading zeros for New England zips
                 }
+                return num.toString();
+            }
+            
+            // Default formatting
+            if (num >= 100000) {
+                return formatLargeNumber(num);
+            } else if (num >= 1000) {
+                return num.toLocaleString();
+            } else if (num % 1 === 0) {
+                return num.toString();
+            } else {
+                return num.toFixed(1);
             }
             
             return value;
