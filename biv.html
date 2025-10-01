@@ -508,31 +508,6 @@
                         </div>
                     </div>
 
-                    <!-- X/Y Variable Selection - Appears After Geography Selection -->
-                    <div class="section" id="arcgisVariableSelection" style="display: none;">
-                        <h3>📊 Create Bivariate Map</h3>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label>X-Axis Variable:</label>
-                            <select id="arcgisXVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
-                                <option value="">-- Select X Variable --</option>
-                            </select>
-                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 Choose your first variable from the loaded demographic fields</div>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label>Y-Axis Variable:</label>
-                            <select id="arcgisYVariable" title="Choose your second variable to compare against the X variable">
-                                <option value="">-- Select Y Variable --</option>
-                            </select>
-                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
-                        </div>
-                        
-                        <button onclick="generateBivariateMap()" style="width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">
-                            Generate Bivariate Map
-                        </button>
-                    </div>
-
                     <!-- Custom Service Accordion -->
                     <div class="section">
                         <div style="cursor: pointer; padding: 12px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: 14px; font-weight: bold; color: #495057;" onclick="toggleAccordion('customArcGISAccordion')">
@@ -561,6 +536,31 @@
                                 Load by ID
                             </button>
                         </div>
+                    </div>
+
+                    <!-- X/Y Variable Selection - Appears After Any Data Source is Loaded -->
+                    <div class="section" id="arcgisVariableSelection" style="display: none;">
+                        <h3>📊 Create Bivariate Map</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>X-Axis Variable:</label>
+                            <select id="arcgisXVariable" title="Choose your first variable - all available demographic fields will appear here after loading geography data">
+                                <option value="">-- Select X Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📊 Choose your first variable from the loaded demographic fields</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label>Y-Axis Variable:</label>
+                            <select id="arcgisYVariable" title="Choose your second variable to compare against the X variable">
+                                <option value="">-- Select Y Variable --</option>
+                            </select>
+                            <div class="help-text" style="font-size: 11px; color: #666; margin-top: 5px;">📈 Choose a different variable to create your bivariate comparison</div>
+                        </div>
+                        
+                        <button onclick="generateBivariateMap()" style="width: 100%; padding: 15px; font-size: 16px; background: #B71C1C; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">
+                            Generate Bivariate Map
+                        </button>
                     </div>
                 </div>
 
