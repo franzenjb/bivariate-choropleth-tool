@@ -1253,7 +1253,10 @@
                                  
                 // Filter out problematic fields
                 const isProblemField = (fieldName.toLowerCase().includes('unemp') && fieldName.includes('WAVG')) ||
-                                     fieldName === 'Unemp_Rate_2023_WAVG';
+                                     fieldName === 'Unemp_Rate_2023_WAVG' ||
+                                     fieldName.toLowerCase().includes('avg_') ||
+                                     fieldName.toLowerCase().includes('average') ||
+                                     (fieldName.includes('WAVG') && fieldName.toLowerCase().includes('val'));
                 
                 if (isNumeric && fieldName !== 'OBJECTID' && fieldName !== 'GlobalID' && fieldName !== 'Shape' && !isProblemField) {
                     const xOption = document.createElement('option');
@@ -2415,7 +2418,10 @@
             priorityFields.forEach(field => {
                 // Skip problematic fields
                 const isProblemField = (field.toLowerCase().includes('unemp') && field.includes('WAVG')) ||
-                                     field === 'Unemp_Rate_2023_WAVG';
+                                     field === 'Unemp_Rate_2023_WAVG' ||
+                                     field.toLowerCase().includes('avg_') ||
+                                     field.toLowerCase().includes('average') ||
+                                     (field.includes('WAVG') && field.toLowerCase().includes('val'));
                                      
                 if (props[field] && fieldCount < 10 && !isProblemField) {
                     const label = field.replace(/_/g, ' ').replace(/2023/g, '').trim();
@@ -2429,7 +2435,10 @@
             for (let key in props) {
                 // Skip problematic fields
                 const isProblemField = (key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
-                                     key === 'Unemp_Rate_2023_WAVG';
+                                     key === 'Unemp_Rate_2023_WAVG' ||
+                                     key.toLowerCase().includes('avg_') ||
+                                     key.toLowerCase().includes('average') ||
+                                     (key.includes('WAVG') && key.toLowerCase().includes('val'));
                                      
                 if (fieldCount < 12 && !priorityFields.includes(key) && props[key] && 
                     key !== 'OBJECTID' && key !== 'Shape' && key !== 'GlobalID' && !isProblemField) {
