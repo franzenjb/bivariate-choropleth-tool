@@ -2340,6 +2340,83 @@
             }
         }
 
+        // Build field accordion for detailed data view
+        function buildFieldAccordion(props) {
+            const accordionId = 'accordion_' + Math.random().toString(36).substr(2, 9);
+            
+            // Categorize fields
+            const categories = {
+                'Demographics': [],
+                'Economics': [],
+                'Housing': [],
+                'Geography': [],
+                'Other': []
+            };
+            
+            Object.keys(props).forEach(key => {
+                // Skip system fields and problematic fields
+                if (key === 'OBJECTID' || key === 'Shape' || key === 'GlobalID' || 
+                    (key.toLowerCase().includes('unemp') && key.includes('WAVG')) ||
+                    key === 'Unemp_Rate_2023_WAVG' ||
+                    key.toLowerCase().includes('avg_') ||
+                    key.toLowerCase().includes('average') ||
+                    (key.includes('WAVG') && key.toLowerCase().includes('val'))) {
+                    return;
+                }
+                
+                const value = props[key];
+                if (value === null || value === undefined || value === '') return;
+                
+                const keyLower = key.toLowerCase();
+                if (keyLower.includes('pop') || keyLower.includes('age') || keyLower.includes('diversity') || 
+                    keyLower.includes('race') || keyLower.includes('ethnicity') || keyLower.includes('hh')) {
+                    categories.Demographics.push({key, value});
+                } else if (keyLower.includes('income') || keyLower.includes('inc') || keyLower.includes('poverty') || 
+                          keyLower.includes('employ') || keyLower.includes('wage')) {
+                    categories.Economics.push({key, value});
+                } else if (keyLower.includes('home') || keyLower.includes('house') || keyLower.includes('rent') || 
+                          keyLower.includes('val') || keyLower.includes('unit')) {
+                    categories.Housing.push({key, value});
+                } else if (keyLower.includes('fips') || keyLower.includes('county') || keyLower.includes('state') || 
+                          keyLower.includes('region') || keyLower.includes('chapter') || keyLower.includes('division') ||
+                          keyLower.includes('sq_mi') || keyLower.includes('acres')) {
+                    categories.Geography.push({key, value});
+                } else {
+                    categories.Other.push({key, value});
+                }
+            });
+            
+            let html = `<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">`;
+            html += `<div style="cursor: pointer; padding: 8px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: 12px; font-weight: bold; color: #495057;" onclick="toggleAccordion('${accordionId}')">`;
+            html += `<span>📊 View All ${Object.keys(props).length} Fields</span>`;
+            html += `<span id="${accordionId}_arrow" style="float: right; transition: transform 0.2s;">▼</span>`;
+            html += `</div>`;
+            html += `<div id="${accordionId}" style="display: none; max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-top: none; background: white;">`;
+            
+            // Add categories
+            Object.keys(categories).forEach(categoryName => {
+                const fields = categories[categoryName];
+                if (fields.length > 0) {
+                    html += `<div style="padding: 8px; border-bottom: 1px solid #f0f0f0;">`;
+                    html += `<div style="font-weight: bold; font-size: 11px; color: #B71C1C; margin-bottom: 5px;">${categoryName} (${fields.length})</div>`;
+                    html += `<table style="width: 100%; font-size: 10px;">`;
+                    
+                    fields.forEach(field => {
+                        const label = field.key.replace(/_/g, ' ').replace(/2023/g, '').trim();
+                        html += `<tr style="border-bottom: 1px solid #f8f9fa;">`;
+                        html += `<td style="padding: 2px 5px 2px 0; color: #666; width: 60%;">${label}:</td>`;
+                        html += `<td style="padding: 2px 0; text-align: right; font-weight: bold;">${formatValue(field.value, field.key)}</td>`;
+                        html += `</tr>`;
+                    });
+                    
+                    html += `</table></div>`;
+                }
+            });
+            
+            html += `</div></div>`;
+            return html;
+        }
+
         // Build enhanced popup for bivariate analysis
         function buildEnhancedPopup(props, xVar, yVar, xVal, yVal) {
             const name = props.NAME || props.County || props.Chapter || props.Region || props.Division || 'Feature';
@@ -2390,6 +2467,9 @@
                 if (props.Division) html += `<div style="font-size: 11px; color: #4CAF50;">Division: ${props.Division}</div>`;
                 html += `</div>`;
             }
+            
+            // All Fields Accordion
+            html += buildFieldAccordion(props);
             
             // Field count
             html += `<div style="font-size: 10px; color: #999; margin-top: 10px; text-align: center; border-top: 1px solid #f0f0f0; padding-top: 5px;">`;
@@ -2450,9 +2530,11 @@
             }
             
             html += `</table>`;
-            html += `<div style="font-size: 10px; color: #999; margin-top: 10px; text-align: center;">`;
-            html += `${Object.keys(props).length} total fields | Click for details`;
-            html += `</div></div>`;
+            
+            // Add accordion for all fields
+            html += buildFieldAccordion(props);
+            
+            html += `</div>`;
             
             return html;
         }
@@ -2944,6 +3026,22 @@
             
             document.getElementById('xVariable').title = 'Choose your first variable (X-axis) - this will be one dimension of your analysis';
             document.getElementById('yVariable').title = 'Choose your second variable (Y-axis) - this will be compared against the X variable';
+        }
+        
+        // Toggle accordion in popup
+        function toggleAccordion(accordionId) {
+            const content = document.getElementById(accordionId);
+            const arrow = document.getElementById(accordionId + '_arrow');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+                arrow.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+                arrow.textContent = '▼';
+            }
         }
         
         // Initialize map on load
