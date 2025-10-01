@@ -60,6 +60,25 @@
             border-radius: 4px 4px 0 0;
             font-size: 14px;
             font-weight: normal;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .demo-close-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .demo-close-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
         
         
@@ -675,7 +694,6 @@
                         <option value="light">Light Gray</option>
                     </select>
                     <button onclick="resetAll()" style="background: #B71C1C; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Reset All</button>
-                    <button id="demoToggleBtn" onclick="toggleDemoPanel()" style="background: #666; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Hide Demos</button>
                 </div>
                 <div id="map"></div>
                 <div class="loading" id="loading">
@@ -686,7 +704,10 @@
             
             <!-- Demo Panel - Right Side -->
             <div class="demo-panel" id="demoPanel">
-                <h3>Examples & Demonstrations</h3>
+                <h3 onclick="toggleDemoPanel()">
+                    <span>Examples & Demonstrations</span>
+                    <button class="demo-close-btn" onclick="event.stopPropagation(); toggleDemoPanel();">×</button>
+                </h3>
                 
                 <div style="padding: 15px;">
                     <h4 style="margin-bottom: 10px; color: #333;">Quick Demos</h4>
@@ -786,19 +807,16 @@
         // Initialize map
         function toggleDemoPanel() {
             const panel = document.getElementById('demoPanel');
-            const toggle = document.getElementById('demoToggleBtn');
             const mainGrid = document.querySelector('.main-grid');
             
             if (panel.classList.contains('collapsed')) {
                 panel.classList.remove('collapsed');
                 mainGrid.classList.remove('demo-collapsed');
-                toggle.textContent = 'Hide Demos';
                 // Remove click listener when expanded
                 panel.removeEventListener('click', toggleDemoPanel);
             } else {
                 panel.classList.add('collapsed');
                 mainGrid.classList.add('demo-collapsed');
-                toggle.textContent = 'Show Demos';
                 // Add click listener when collapsed so users can click to expand
                 setTimeout(() => {
                     panel.addEventListener('click', toggleDemoPanel);
@@ -923,12 +941,16 @@
                 map.fitBounds(expandedBounds, { padding: [20, 20] });
             } else {
                 // Significant data outside - fit all data but max out at extended US
-                const actualBounds = bounds;
-                const usConstrainedBounds = actualBounds.intersect(extendedUSBounds);
-                if (usConstrainedBounds.isValid()) {
-                    map.fitBounds(usConstrainedBounds, { padding: [20, 20] });
+                if (bounds && bounds.isValid && bounds.isValid()) {
+                    const usConstrainedBounds = bounds.intersect(extendedUSBounds);
+                    if (usConstrainedBounds && usConstrainedBounds.isValid()) {
+                        map.fitBounds(usConstrainedBounds, { padding: [20, 20] });
+                    } else {
+                        map.fitBounds(bounds, { padding: [20, 20] });
+                    }
                 } else {
-                    map.fitBounds(actualBounds, { padding: [20, 20] });
+                    // Fallback to extended US bounds if no valid bounds
+                    map.fitBounds(extendedUSBounds, { padding: [20, 20] });
                 }
             }
             
