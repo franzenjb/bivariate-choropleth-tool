@@ -1322,8 +1322,9 @@
             const arcgisXSelect = document.getElementById('arcgisXVariable');
             const arcgisYSelect = document.getElementById('arcgisYVariable');
             
-            fieldSection.style.display = 'block';
+            // Only show the variable selection sections, not the redundant field list
             arcgisVariableSection.style.display = 'block';
+            // fieldSection.style.display = 'block';  // This is redundant - fields show in dropdowns
             fieldCount.textContent = `Found ${currentFields.length} data fields`;
             
             // Clear previous options
@@ -2111,9 +2112,9 @@
             csvData = null;
             csvFields = [];
             
-            // Hide sections
-            document.getElementById('fieldSelection').style.display = 'none';
+            // Hide sections  
             document.getElementById('arcgisVariableSelection').style.display = 'none';
+            // No longer showing fieldSelection section - it's redundant
             document.getElementById('legendSection').style.display = 'none';
             document.getElementById('statsSection').style.display = 'none';
             document.getElementById('exportSection').style.display = 'none';
@@ -2149,7 +2150,7 @@
             let matchingComplete = false;
             for (let i = 0; i < 30; i++) { // Wait up to 30 seconds
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                if (document.getElementById('fieldSelection').style.display === 'block') {
+                if (document.getElementById('arcgisVariableSelection').style.display === 'block') {
                     matchingComplete = true;
                     break;
                 }
