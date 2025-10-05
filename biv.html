@@ -761,21 +761,21 @@
                     </div>
                     
                     <div class="quadrant-analysis">
-                        <div class="quadrant-box quadrant-high-high">
-                            <div>High-High</div>
-                            <div id="highHighCount">0</div>
-                        </div>
-                        <div class="quadrant-box quadrant-high-low">
-                            <div>High-Low</div>
-                            <div id="highLowCount">0</div>
-                        </div>
                         <div class="quadrant-box quadrant-low-high">
                             <div>Low-High</div>
                             <div id="lowHighCount">0</div>
                         </div>
+                        <div class="quadrant-box quadrant-high-high">
+                            <div>High-High</div>
+                            <div id="highHighCount">0</div>
+                        </div>
                         <div class="quadrant-box quadrant-low-low">
                             <div>Low-Low</div>
                             <div id="lowLowCount">0</div>
+                        </div>
+                        <div class="quadrant-box quadrant-high-low">
+                            <div>High-Low</div>
+                            <div id="highLowCount">0</div>
                         </div>
                     </div>
                 </div>
@@ -1734,11 +1734,12 @@
                     cell.className = 'legend-cell';
                     cell.style.backgroundColor = getBivariateColor(x / 2, y / 2);
                     
-                    // Add labels to corner cells
-                    if (x === 0 && y === 0) cell.textContent = 'L-L';
-                    else if (x === 2 && y === 0) cell.textContent = 'H-L';
-                    else if (x === 0 && y === 2) cell.textContent = 'L-H';
-                    else if (x === 2 && y === 2) cell.textContent = 'H-H';
+                    // Add labels to corner cells (FIXED BIVARIATE ORIENTATION)
+                    // Since y=2 is TOP row and y=0 is BOTTOM row:
+                    if (x === 0 && y === 2) cell.textContent = 'L-H';        // Top-left: Low X, High Y
+                    else if (x === 2 && y === 2) cell.textContent = 'H-H';   // Top-right: High X, High Y  
+                    else if (x === 0 && y === 0) cell.textContent = 'L-L';   // Bottom-left: Low X, Low Y
+                    else if (x === 2 && y === 0) cell.textContent = 'H-L';   // Bottom-right: High X, Low Y
                     
                     legendGrid.appendChild(cell);
                 }

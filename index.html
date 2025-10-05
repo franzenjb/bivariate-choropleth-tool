@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>American Red Cross Bivariate Analysis Tool</title>
+    <title>American Red Cross Bivariate Analysis Tool v2.1</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -635,21 +635,21 @@
                     </div>
                     
                     <div class="quadrant-analysis">
-                        <div class="quadrant-box quadrant-high-high">
-                            <div>High-High</div>
-                            <div id="highHighCount">0</div>
-                        </div>
-                        <div class="quadrant-box quadrant-high-low">
-                            <div>High-Low</div>
-                            <div id="highLowCount">0</div>
-                        </div>
                         <div class="quadrant-box quadrant-low-high">
                             <div>Low-High</div>
                             <div id="lowHighCount">0</div>
                         </div>
+                        <div class="quadrant-box quadrant-high-high">
+                            <div>High-High</div>
+                            <div id="highHighCount">0</div>
+                        </div>
                         <div class="quadrant-box quadrant-low-low">
                             <div>Low-Low</div>
                             <div id="lowLowCount">0</div>
+                        </div>
+                        <div class="quadrant-box quadrant-high-low">
+                            <div>High-Low</div>
+                            <div id="highLowCount">0</div>
                         </div>
                     </div>
                 </div>
@@ -924,8 +924,20 @@
             } else {
                 // Significant data outside - fit all data but max out at extended US
                 const actualBounds = bounds;
-                const usConstrainedBounds = actualBounds.intersect(extendedUSBounds);
-                if (usConstrainedBounds.isValid()) {
+                // Use the constrained bounds instead of intersection
+                const southWest = L.latLng(
+                    Math.max(actualBounds.getSouth(), extendedUSBounds.getSouth()),
+                    Math.max(actualBounds.getWest(), extendedUSBounds.getWest())
+                );
+                const northEast = L.latLng(
+                    Math.min(actualBounds.getNorth(), extendedUSBounds.getNorth()),
+                    Math.min(actualBounds.getEast(), extendedUSBounds.getEast())
+                );
+                const usConstrainedBounds = L.latLngBounds(southWest, northEast);
+                
+                if (usConstrainedBounds.isValid() && 
+                    usConstrainedBounds.getSouth() < usConstrainedBounds.getNorth() &&
+                    usConstrainedBounds.getWest() < usConstrainedBounds.getEast()) {
                     map.fitBounds(usConstrainedBounds, { padding: [20, 20] });
                 } else {
                     map.fitBounds(actualBounds, { padding: [20, 20] });
@@ -1540,11 +1552,16 @@
                     cell.className = 'legend-cell';
                     cell.style.backgroundColor = getBivariateColor(x / 2, y / 2);
                     
-                    // Add labels to corner cells
-                    if (x === 0 && y === 0) cell.textContent = 'L-L';
-                    else if (x === 2 && y === 0) cell.textContent = 'H-L';
-                    else if (x === 0 && y === 2) cell.textContent = 'L-H';
+                    // Add labels to corner cells (FIXED BIVARIATE ORIENTATION)
+                    // Since y=2 is TOP row and y=0 is BOTTOM row:
+                    // Top-left: Low X, High Y (x=0, y=2)
+                    if (x === 0 && y === 2) cell.textContent = 'L-H';
+                    // Top-right: High X, High Y (x=2, y=2)
                     else if (x === 2 && y === 2) cell.textContent = 'H-H';
+                    // Bottom-left: Low X, Low Y (x=0, y=0)
+                    else if (x === 0 && y === 0) cell.textContent = 'L-L';
+                    // Bottom-right: High X, Low Y (x=2, y=0)
+                    else if (x === 2 && y === 0) cell.textContent = 'H-L';
                     
                     legendGrid.appendChild(cell);
                 }
