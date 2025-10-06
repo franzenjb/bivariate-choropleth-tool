@@ -1418,6 +1418,25 @@
                 // Calculate correlation
                 const correlation = calculateCorrelation(xValues, yValues);
                 
+                // Check for high correlation and warn user
+                if (Math.abs(correlation) > 0.95) {
+                    const suggestions = suggestVariableCombinations();
+                    const suggestionText = suggestions.length > 0 ? 
+                        `\nSuggestions based on your available data:\n${suggestions.map(s => `• ${s}`).join('\n')}\n` :
+                        `\n• Population vs Income\n• Population vs Unemployment Rate\n• Population vs Population Density\n• Income vs Age Demographics\n`;
+                    
+                    const warning = `⚠️ HIGH CORRELATION WARNING (${correlation.toFixed(3)}):\n\n` +
+                        `The variables "${xVar}" and "${yVar}" are ${correlation > 0 ? 'highly positively' : 'highly negatively'} correlated.\n\n` +
+                        `This makes bivariate analysis less meaningful. Consider using variables that can vary independently:${suggestionText}\n` +
+                        `Continue anyway?`;
+                    
+                    if (!confirm(warning)) {
+                        showStatus('Analysis cancelled - please select different variables', 'warning');
+                        showLoading(false);
+                        return;
+                    }
+                }
+                
                 // Initialize quadrant counts
                 let highHigh = 0, highLow = 0, lowHigh = 0, lowLow = 0;
                 
@@ -1569,6 +1588,53 @@
             
             document.getElementById('xLabel').textContent = `→ ${xVar}`;
             document.getElementById('yLabel').textContent = `↑ ${yVar}`;
+        }
+
+        // Suggest meaningful variable combinations
+        function suggestVariableCombinations() {
+            const fields = Array.from(document.getElementById('xVariable').options)
+                .map(opt => opt.value)
+                .filter(val => val !== "-- Select X Variable --");
+            
+            const suggestions = [];
+            
+            // Find income fields
+            const incomeFields = fields.filter(f => 
+                f.toLowerCase().includes('income') || 
+                f.toLowerCase().includes('inc_') ||
+                f.toLowerCase().includes('per_cap')
+            );
+            
+            // Find population fields
+            const popFields = fields.filter(f => 
+                f.toLowerCase().includes('pop') && 
+                !f.toLowerCase().includes('den') &&
+                !f.toLowerCase().includes('rate')
+            );
+            
+            // Find rate/percentage fields
+            const rateFields = fields.filter(f => 
+                f.toLowerCase().includes('rate') || 
+                f.toLowerCase().includes('den') ||
+                f.toLowerCase().includes('unemp')
+            );
+            
+            // Population vs Income
+            if (popFields.length > 0 && incomeFields.length > 0) {
+                suggestions.push(`${popFields[0]} vs ${incomeFields[0]} (Population vs Income)`);
+            }
+            
+            // Population vs Rates
+            if (popFields.length > 0 && rateFields.length > 0) {
+                suggestions.push(`${popFields[0]} vs ${rateFields[0]} (Population vs Rate)`);
+            }
+            
+            // Income vs Rates
+            if (incomeFields.length > 0 && rateFields.length > 0) {
+                suggestions.push(`${incomeFields[0]} vs ${rateFields[0]} (Income vs Rate)`);
+            }
+            
+            return suggestions;
         }
 
         // Calculate correlation
